@@ -1,0 +1,15 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Trotim's lua testmap
+NAME_ID = 
+KIND = FREE
+ENSIGN_POS = 
+ENSIGN_ZOOM = 
+PLAYERS = 
+OPTIONS = 
+SPEECH = 
+LAND_VIEW = 
+AUTHOR = Trotim
+DESCRIPTION = 
+DATE = 2024-6-7
+MAPSIZE = 51 51
