@@ -67,19 +67,15 @@ local function initLevel()
 	
 	CREATE_PARTY("DIGGER")
 		ADD_TO_PARTY("DIGGER","THIEF",1,500,"ATTACK_ENEMIES",0)
-end
 
-local wavenumber = 0
-
-function magic_use_kill()
-	print("kill")
+	Game.wavenumber = 0
 end
 
 
 function partySpawn()
-	-- limit wavenumber between 1 and 10
-	wavenumber = math.max(wavenumber, 1)
-	wavenumber = math.min(wavenumber, 10)
+	-- limit Game.wavenumber between 1 and 10
+	Game.wavenumber = math.max(Game.wavenumber, 1)
+	Game.wavenumber = math.min(Game.wavenumber, 10)
 	
 	-- set up 2 random options for each party, picked from this table
 	local partyoptions = {"THIEF", "ARCHER", "DWARFA", "WIZARD", "BARBARIAN", "MONK", "FAIRY", "GIANT", "SAMURAI", "WITCH", "DRUID", "TIME_MAGE"}
@@ -88,27 +84,26 @@ function partySpawn()
 	local partytypes = {partytype1, partytype1, partytype2} -- deliberately weighted pick so that type1 shows up 66% of the time, type2 33%
 	
 	-- initialize party with at least 1 of each type
-	local partyname = "PARTY" .. wavenumber
+	local partyname = "PARTY" .. Game.wavenumber
 	CREATE_PARTY(partyname)
-		ADD_TO_PARTY(partyname,partytype1,wavenumber,500,"ATTACK_ENEMIES",0)
-		ADD_TO_PARTY(partyname,partytype2,wavenumber,500,"ATTACK_ENEMIES",0)
+		ADD_TO_PARTY(partyname,partytype1,Game.wavenumber,500,"ATTACK_ENEMIES",0)
+		ADD_TO_PARTY(partyname,partytype2,Game.wavenumber,500,"ATTACK_ENEMIES",0)
 	
 	-- add some more based on how long we've been playing
-	local partyamount = wavenumber + math.floor(PLAYER0.game_turn / 2000)
+	local partyamount = Game.wavenumber + math.floor(PLAYER0.game_turn / 2000)
 	partyamount = math.min(partyamount, 30)
 	for i=1,partyamount do
 		local partypick = partytypes[math.random(#partytypes)]
-		local randomlevel = math.random(wavenumber/2,wavenumber)
+		local randomlevel = math.random(Game.wavenumber/2,Game.wavenumber)
 		ADD_TO_PARTY(partyname,partypick,randomlevel,randomlevel*200,"ATTACK_ENEMIES",0)
 	end
 	
-	-- PLAYER_GOOD didn't work as argument 1 here
-	SendChatMessage(4, "My " .. partytype1 .. " & " .. partytype2 .. " are coming! (Wave " .. wavenumber .. ")")
+	SendChatMessage(PLAYER_GOOD, "My " .. partytype1 .. " & " .. partytype2 .. " are coming! (Wave " .. Game.wavenumber .. ")")
 	
 	-- ADD_PARTY_TO_LEVEL kept giving me wrong argument errors idk
-	ADD_TUNNELLER_PARTY_TO_LEVEL(PLAYER_GOOD,partyname,-1,"DUNGEON",0,wavenumber,500)
+	ADD_TUNNELLER_PARTY_TO_LEVEL(PLAYER_GOOD,partyname,-1,"DUNGEON",0,Game.wavenumber,500)
 	
-	wavenumber = wavenumber + 1
+	Game.wavenumber = Game.wavenumber + 1
 end
 
 function diggerSpawn()
@@ -127,13 +122,13 @@ function OnGameStart()
 	-- keep spawning randomly generated parties every 4800 turns. loops
 	local party_spawn_timer = CreateTrigger()
         TriggerRegisterTimerEvent(party_spawn_timer, 4800, true) -- true for repeating timer
-		TriggerAddCondition(party_spawn_timer, function() return (wavenumber < 10) end) -- only up to wave 10
+		TriggerAddCondition(party_spawn_timer, function() return (Game.wavenumber < 10) end) -- only up to wave 10
         TriggerAddAction(party_spawn_timer, partySpawn)
 		
 	-- win when wave 10 has spawned and no more heroes are on the map
 	local triggerWin = CreateTrigger()
         TriggerRegisterTimerEvent(triggerWin, 20, true) -- check every 20 turns
-        TriggerAddCondition(triggerWin, function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (wavenumber >= 10) end)
+        TriggerAddCondition(triggerWin, function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 10) end)
         TriggerAddAction(triggerWin, function() WIN_GAME(PLAYER0) end)
 
 end
