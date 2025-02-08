@@ -98,7 +98,7 @@ function partySpawn()
 		ADD_TO_PARTY(partyname,partypick,randomlevel,randomlevel*200,"ATTACK_ENEMIES",0)
 	end
 	
-	SendChatMessage(PLAYER_GOOD, "My " .. partytype1 .. " & " .. partytype2 .. " are coming! (Wave " .. Game.wavenumber .. ")")
+	QUICK_MESSAGE("My " .. partytype1 .. " & " .. partytype2 .. " are coming! (Wave " .. Game.wavenumber .. ")", PLAYER_GOOD)
 	
 	-- ADD_PARTY_TO_LEVEL kept giving me wrong argument errors idk
 	ADD_TUNNELLER_PARTY_TO_LEVEL(PLAYER_GOOD,partyname,-1,"DUNGEON",0,Game.wavenumber,500)
