@@ -115,20 +115,14 @@ function OnGameStart()
     initLevel()
 	
 	-- spawn small tunneller party after 3000 turns. only once
-	local first_digger = CreateTrigger()
-        TriggerRegisterTimerEvent(first_digger, 3000, false) -- false for one time only
-        TriggerAddAction(first_digger, diggerSpawn)
+	RegisterTimerEvent(diggerSpawn,3000,false)
 	
 	-- keep spawning randomly generated parties every 4800 turns. loops
-	local party_spawn_timer = CreateTrigger()
-        TriggerRegisterTimerEvent(party_spawn_timer, 4800, true) -- true for repeating timer
+	local party_spawn_timer = RegisterTimerEvent(partySpawn,4800,true)
 		TriggerAddCondition(party_spawn_timer, function() return (Game.wavenumber < 10) end) -- only up to wave 10
-        TriggerAddAction(party_spawn_timer, partySpawn)
 		
 	-- win when wave 10 has spawned and no more heroes are on the map
-	local triggerWin = CreateTrigger()
-        TriggerRegisterTimerEvent(triggerWin, 20, true) -- check every 20 turns
-        TriggerAddCondition(triggerWin, function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 10) end)
-        TriggerAddAction(triggerWin, function() WIN_GAME(PLAYER0) end)
+	RegisterOnConditionEvent(function() WIN_GAME(PLAYER0) end,
+							 function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 10) end)
 
 end
