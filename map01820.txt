@@ -229,73 +229,6 @@ SET_BOX_TOOLTIP(20, "FREE IMP")
 
 QUICK_OBJECTIVE(1, "This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
 
-CONCEAL_MAP_RECT(PLAYER0, 133, 121, 100, 100, 1)
-REVEAL_MAP_LOCATION(PLAYER0, PLAYER0, 18)
-SET_CREATURE_INSTANCE(DRUID, 2, RANGED_HEAL, 2)
-SET_CREATURE_INSTANCE(DRUID, 3, SLOW, 3)
-SET_CREATURE_INSTANCE(DRUID, 5, RANGED_ARMOUR, 5)
-SET_CREATURE_INSTANCE(GHOST, 5, RANGED_REBOUND, 5)
-SET_CREATURE_INSTANCE(TIME_MAGE, 8, RANGED_SPEED, 6)
-SET_CREATURE_INSTANCE(IMP, 1, NULL, 1)
-MAGIC_AVAILABLE(PLAYER0, POWER_IMP, 0, 0)
-MAGIC_AVAILABLE(PLAYER1, POWER_IMP, 0, 0)
-MAGIC_AVAILABLE(PLAYER1, POWER_HAND, 0, 0)
-MAGIC_AVAILABLE(PLAYER1, POWER_SLAP, 0, 0)
-MAGIC_AVAILABLE(PLAYER0, POWER_POSSESS, 0, 0)
-SET_FLAG(PLAYER0, FLAG5, 0)
-SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, DestroyOnLava, 1)
-SET_OBJECT_CONFIGURATION(CTA_ENSIGN, MaximumSize, 1)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Stand, 556)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Ambulate, 554)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Attack, 558)
-SET_CREATURE_CONFIGURATION(TUNNELLER, GotHit, 560)
-SET_CREATURE_CONFIGURATION(TUNNELLER, GotHit, 560)
-SET_CREATURE_CONFIGURATION(TUNNELLER, PowerGrab, 574)
-SET_CREATURE_CONFIGURATION(TUNNELLER, GotSlapped, 576)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Celebrate, 564)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Scream, 570)
-SET_CREATURE_CONFIGURATION(TUNNELLER, DropDead, 572)
-SET_CREATURE_CONFIGURATION(TUNNELLER, DeadSplat, 946)
-SET_CREATURE_CONFIGURATION(TUNNELLER, QuerySymbol, 154)
-SET_CREATURE_CONFIGURATION(TUNNELLER, HandSymbol, 222)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Foot, 9, 4)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Hit, 490, 1)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Happy, 488, 1)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Hurt, 490, 3)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Die, 493, 2)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Hang, 495, 1)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Drop, 4961, 4)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Slap, 490, 3)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Fight, 485, 3)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Health, 75)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Strength, 5)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Armour, 5)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Dexterity, 60)
-SET_CREATURE_CONFIGURATION(TUNNELLER, FearWounded, 0)
-SET_CREATURE_CONFIGURATION(TUNNELLER, FearStronger, 10000)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Defence, 7)
-SET_CREATURE_CONFIGURATION(TUNNELLER, Luck, 0)
-SET_CREATURE_CONFIGURATION(TUNNELLER, SlapsToKill, 5)
-SET_CREATURE_PROPERTY(TUNNELLER, SPECIAL_DIGGER, 0)
-SET_CREATURE_FEAR(BILE_DEMON, 0)
-SET_CREATURE_FEAR(BUG, 0)
-SET_CREATURE_FEAR(DARK_MISTRESS, 0)
-SET_CREATURE_FEAR(DEMONSPAWN, 0)
-SET_CREATURE_FEAR(DRAGON, 0)
-SET_CREATURE_FEAR(DRUID, 0)
-SET_CREATURE_FEAR(FLY, 0)
-SET_CREATURE_FEAR(GHOST, 0)
-SET_CREATURE_FEAR(HELL_HOUND, 0)
-SET_CREATURE_FEAR(HORNY, 0)
-SET_CREATURE_FEAR(IMP, 0)
-SET_CREATURE_FEAR(ORC, 0)
-SET_CREATURE_FEAR(SKELETON, 0)
-SET_CREATURE_FEAR(SORCEROR, 0)
-SET_CREATURE_FEAR(SPIDER, 0)
-SET_CREATURE_FEAR(TENTACLE, 0)
-SET_CREATURE_FEAR(TIME_MAGE, 0)
-SET_CREATURE_FEAR(TROLL, 0)
-SET_CREATURE_FEAR(VAMPIRE, 0)
 NEXT_COMMAND_REUSABLE
 KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, AT_ACTION_POINT[64], 1)
 SET_GAME_RULE(DungeonHeartHealHealth, 0)
@@ -1760,183 +1693,34 @@ IF(PLAYER0, DUNGEON_DESTROYED == 0)
         REM Process heart damage
         If(PLAYER0, FLAG1 == 0)
             IF(PLAYER0, TOTAL_CREATURES == 0)
-                NEXT_COMMAND_REUSABLE
-                COMPUTE_FLAG(PLAYER3, FLAG0, SET, PLAYER1, TOTAL_CREATURES)
-                NEXT_COMMAND_REUSABLE
-                COMPUTE_FLAG(PLAYER2, FLAG7, SET, PLAYER1, TOTAL_CREATURES)
-                NEXT_COMMAND_REUSABLE
+                if(PLAYER1, TOTAL_CREATURES > 0) then
+                    damageHeart(PLAYER0)
+                end
+
                 ADD_TO_FLAG(PLAYER1, FLAG5, 1)
-                NEXT_COMMAND_REUSABLE
                 SET_FLAG(PLAYER1, FLAG1, 1)
-                NEXT_COMMAND_REUSABLE
                 CREATE_EFFECTS_LINE(COMBAT, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
-                NEXT_COMMAND_REUSABLE
                 CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER0)
-                NEXT_COMMAND_REUSABLE
                 COMPUTE_FLAG(PLAYER3, FLAG6, SET, PLAYER1, HORNY, 0)
             ENDIF
             IF(PLAYER1, TOTAL_CREATURES == 0)
-                NEXT_COMMAND_REUSABLE
-                COMPUTE_FLAG(PLAYER3, FLAG1, SET, PLAYER0, TOTAL_CREATURES)
-                NEXT_COMMAND_REUSABLE
-                COMPUTE_FLAG(PLAYER3, FLAG2, SET, PLAYER0, TOTAL_CREATURES)
-                NEXT_COMMAND_REUSABLE
+                if(PLAYER0, TOTAL_CREATURES > 0)
+                    damageHeart(PLAYER1)
+
+                processPlayerReward(PLAYER0.TOTAL_CREATURES)
+
+                COMPUTE_FLAG(PLAYER3, FLAG2, SET, )
                 ADD_TO_FLAG(PLAYER1, FLAG6, 1)
-                NEXT_COMMAND_REUSABLE
                 SET_FLAG(PLAYER1, FLAG1, 1)
-                NEXT_COMMAND_REUSABLE
                 ADD_HEART_HEALTH(PLAYER1, -1500)
-                NEXT_COMMAND_REUSABLE
                 CREATE_EFFECTS_LINE(COMBAT, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
-                NEXT_COMMAND_REUSABLE
                 CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER1)
             ENDIF
         ENDIF
-        REM Process Visual Damage to Hearts
-        IF(PLAYER3, FLAG0 > 0)
-            NEXT_COMMAND_REUSABLE
-            ADD_HEART_HEALTH(PLAYER0, -2000)
-            NEXT_COMMAND_REUSABLE
-            ADD_TO_FLAG(PLAYER3, FLAG3, 1)
-            IF(PLAYER3, FLAG3 == 1)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(50, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 2)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(51, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 3)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(52, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 4)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(53, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 5)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(54, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 6)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(55, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 7)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(56, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 == 8)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(57, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-            ENDIF
-            IF(PLAYER3, FLAG3 >= 9)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(58, PLAYER0, 0, 3, 5, EFFECT_BALL_PUFF_BLUE)
-                NEXT_COMMAND_REUSABLE
-                SET_FLAG(PLAYER3, FLAG3, 0)
-            ENDIF
-            IF(PLAYER3, FLAG0 > 0)
-                NEXT_COMMAND_REUSABLE
-                ADD_TO_FLAG(PLAYER3, FLAG0, -1)
-            ENDIF
-        ENDIF
-        IF(PLAYER3, FLAG1 > 0)
-            NEXT_COMMAND_REUSABLE
-            ADD_HEART_HEALTH(PLAYER1, -2000)
-            NEXT_COMMAND_REUSABLE
-            ADD_TO_FLAG(PLAYER3, FLAG4, 1)
-            IF(PLAYER3, FLAG4 == 1)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(50, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 2)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(51, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 3)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(52, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 4)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(53, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 5)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(54, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 6)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(55, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 7)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(56, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 8)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(57, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-            ENDIF
-            IF(PLAYER3, FLAG4 == 9)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECTS_LINE(58, PLAYER1, 0, 3, 5, EFFECT_BALL_PUFF_RED)
-                NEXT_COMMAND_REUSABLE
-                SET_FLAG(PLAYER3, FLAG4, 0)
-            ENDIF
-            IF(PLAYER3, FLAG1 > 0)
-                NEXT_COMMAND_REUSABLE
-                ADD_TO_FLAG(PLAYER3, FLAG1, -1)
-            ENDIF
-        ENDIF
 
-        REM REWARD for PLAYER
-        IF(PLAYER3, FLAG2 > 0)
-            NEXT_COMMAND_REUSABLE
-            ADD_GOLD_TO_PLAYER(PLAYER0, 100)
-            IF(PLAYER3, FLAG2 == 1)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 59, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 2)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 60, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 3)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 68, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 4)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 69, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 5)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 70, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 6)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 71, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 7)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 72, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 8)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 73, 100)
-            ENDIF
-            IF(PLAYER3, FLAG2 == 9)
-                NEXT_COMMAND_REUSABLE
-                CREATE_EFFECT(-41, 50, 100)
-                NEXT_COMMAND_REUSABLE
-                SET_FLAG(PLAYER3, FLAG2, 0)
-            ENDIF
-            IF(PLAYER3, FLAG2 > 0)
-                NEXT_COMMAND_REUSABLE
-                ADD_TO_FLAG(PLAYER3, FLAG2, -1)
-            ENDIF
-        ENDIF
+
+
+
 
         REM End phase
         If(PLAYER1, FLAG1 == 1)

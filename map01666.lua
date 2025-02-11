@@ -1,3 +1,5 @@
+--Spatoween map by Spatulade, translated from DKscript to lua by qqluqq
+
 
 lightstorms = {{interval = 600, {PLAYER1,24},{PLAYER2,26},{PLAYER3,32},{PLAYER4,39},{PLAYER5,40},{PLAYER6,37}},
                {interval = 350, {PLAYER1,25},{PLAYER2,28},{PLAYER3,34},{PLAYER4,33},{PLAYER5,36},{PLAYER6,38},{PLAYER_GOOD,41}},
@@ -8,4 +10,3 @@ lightstorms = {{interval = 600, {PLAYER1,24},{PLAYER2,26},{PLAYER3,32},{PLAYER4,
 
 
 
-               
