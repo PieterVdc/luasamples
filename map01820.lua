@@ -1,37 +1,53 @@
 --AutoChess map by Shinthoras, translated from DKscript to lua by qqluqq
 
+local Creatures = {
+    {Creature_type = "BILE_DEMON",   BoxToolTip = "BILE DEMON",    SpecialBoxId = 0,  Row = 1, column = 1, cost = 250 , levelRange = {2,8} },
+    {Creature_type = "BUG",          BoxToolTip = "BUG",           SpecialBoxId = 1,  Row = 1, column = 2, cost = 50  , levelRange = {6,10}},
+    {Creature_type = "DARK_MISTRES", BoxToolTip = "DARK MISTRES",  SpecialBoxId = 2,  Row = 1, column = 3, cost = 450 , levelRange = {4,8} },
+    {Creature_type = "DEMONSPAWN",   BoxToolTip = "DEMONSPAWN",    SpecialBoxId = 3,  Row = 1, column = 4, cost = 180 , levelRange = {4,10}},
+    {Creature_type = "DRAGON",       BoxToolTip = "DRAGON",        SpecialBoxId = 4,  Row = 1, column = 5, cost = 700 , levelRange = {4,8} },
+    {Creature_type = "DRUID",        BoxToolTip = "DRUID",         SpecialBoxId = 5,  Row = 1, column = 6, cost = 350 , levelRange = {3,8} },
+
+    {Creature_type = "FLY",          BoxToolTip = "FLY",           SpecialBoxId = 6,  Row = 2, column = 1, cost = 10  , levelRange = {6,10}},
+    {Creature_type = "GHOST",        BoxToolTip = "GHOST",         SpecialBoxId = 7,  Row = 2, column = 2, cost = 50  , levelRange = {4,8} },
+    {Creature_type = "HELL_HOUND",   BoxToolTip = "HELL HOUND",    SpecialBoxId = 8,  Row = 2, column = 3, cost = 170 , levelRange = {5,10}},
+    {Creature_type = "HORNY",        BoxToolTip = "HORNY",         SpecialBoxId = 9,  Row = 2, column = 4, cost = 1200, levelRange = {5,8} },
+    {Creature_type = "ORC",          BoxToolTip = "ORC",           SpecialBoxId = 10, Row = 2, column = 5, cost = 200 , levelRange = {3,10}},
+    {Creature_type = "SKELETON",     BoxToolTip = "SKELETON",      SpecialBoxId = 11, Row = 2, column = 6, cost = 180 , levelRange = {4,10}},
+
+    {Creature_type = "SORCEROR",     BoxToolTip = "WARLOCK",       SpecialBoxId = 12, Row = 3, column = 1, cost = 100 , levelRange = {4,10}},
+    {Creature_type = "SPIDER",       BoxToolTip = "SPIDER",        SpecialBoxId = 13, Row = 3, column = 2, cost = 80  , levelRange = {4,10}},
+    {Creature_type = "TENTACLE",     BoxToolTip = "TENTACLE",      SpecialBoxId = 14, Row = 3, column = 3, cost = 110 , levelRange = {5,10}},
+    {Creature_type = "TIME_MAGE",    BoxToolTip = "TIME MAGE",     SpecialBoxId = 15, Row = 3, column = 4, cost = 420 , levelRange = {4,10}},
+    {Creature_type = "TROLL",        BoxToolTip = "TROLL",         SpecialBoxId = 16, Row = 3, column = 5, cost = 130 , levelRange = {5,10}},
+    {Creature_type = "VAMPIRE",      BoxToolTip = "VAMPIRE",       SpecialBoxId = 17, Row = 3, column = 6, cost = 600 , levelRange = {4,10}},
+}
+
+
+local columns = {
+    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43},
+    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44},
+    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45},
+    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46},
+    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47},
+    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48},
+}
+
 
 function initialise()
-    PLAYER0.FLAG0 = 1
-    PLAYER0.FLAG1 = 1
-    PLAYER0.FLAG4 = 1
-    PLAYER0.FLAG7 = 1
-    PLAYER1.FLAG0 = 1
-    PLAYER0.FLAG2 = 4
-    PLAYER1.FLAG7 = 1
+    Game.FIGHT_PHASE_ENDED = 1
+    Game.PREPARNG_PHASE = 1
+    Game.CREATURE_RANDOM = 1
+    Game.Round = 1
+    Game.PREPARING_COUNTDOWN  = 1
+    Game.PLAYER_COLLUM_CREATURE_RANDOM  = 4
+    Game.BOX_AND_FREE = 1
+    Game.DESTROY_BOXES_TIMER = 0
     --REST RESET-BOX TIMER
 
-    --row1
-    SET_BOX_TOOLTIP(0, "BILE DEMON")
-    SET_BOX_TOOLTIP(1, "BUG")
-    SET_BOX_TOOLTIP(2, "DARK MISTRESS")
-    SET_BOX_TOOLTIP(3, "DEMONSPAWN")
-    SET_BOX_TOOLTIP(4, "DRAGON")
-    SET_BOX_TOOLTIP(5, "DRUID")
-    --row2
-    SET_BOX_TOOLTIP(6, "FLY")
-    SET_BOX_TOOLTIP(7, "GHOST")
-    SET_BOX_TOOLTIP(8, "HELL HOUND")
-    SET_BOX_TOOLTIP(9, "HORNY")
-    SET_BOX_TOOLTIP(10, "ORC")
-    SET_BOX_TOOLTIP(11, "SKELETON")
-    --row3
-    SET_BOX_TOOLTIP(12, "WARLOCK")
-    SET_BOX_TOOLTIP(13, "SPIDER")
-    SET_BOX_TOOLTIP(14, "TENTACLE")
-    SET_BOX_TOOLTIP(15, "TIME MAGE")
-    SET_BOX_TOOLTIP(16, "TROLL")
-    SET_BOX_TOOLTIP(17, "VAMPIRE")
+    for _, cr in ipairs(Creatures) do
+        SET_BOX_TOOLTIP(cr.SpecialBoxId, cr.BoxToolTip)    
+    end
 
     SET_BOX_TOOLTIP(18, "START GAME")
     SET_BOX_TOOLTIP(19, "RESET ROUND, no money refund!")
@@ -52,7 +68,6 @@ function initialise()
     MAGIC_AVAILABLE(PLAYER1, POWER_HAND, 0, 0)
     MAGIC_AVAILABLE(PLAYER1, POWER_SLAP, 0, 0)
     MAGIC_AVAILABLE(PLAYER0, POWER_POSSESS, 0, 0)
-    SET_FLAG(PLAYER0, FLAG5, 0)
     SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, DestroyOnLava, 1)
     SET_OBJECT_CONFIGURATION(CTA_ENSIGN, MaximumSize, 1)
     SET_CREATURE_CONFIGURATION(TUNNELLER, Stand, 556)
@@ -132,37 +147,95 @@ end
 
 function processPlayerReward(creatures_remaining)
 -- REWARD for PLAYER
-IF(PLAYER3, FLAG2 > 0)
+IF(Game.SURVIVING_CREATURE_PLAYER_REWARD > 0)
     ADD_GOLD_TO_PLAYER(PLAYER0, 100)
-    IF(PLAYER3, FLAG2 == 1)
-        CREATE_EFFECT(-41, 59, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 1)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 59, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 2)
-        CREATE_EFFECT(-41, 60, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 2)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 60, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 3)
-        CREATE_EFFECT(-41, 68, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 3)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 68, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 4)
-        CREATE_EFFECT(-41, 69, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 4)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 69, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 5)
-        CREATE_EFFECT(-41, 70, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 5)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 70, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 6)
-        CREATE_EFFECT(-41, 71, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 6)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 71, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 7)
-        CREATE_EFFECT(-41, 72, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 7)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 72, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 8)
-        CREATE_EFFECT(-41, 73, 100)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 8)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 73, 100)
     ENDIF
-    IF(PLAYER3, FLAG2 == 9)
-        CREATE_EFFECT(-41, 50, 100)
-        SET_FLAG(PLAYER3, FLAG2, 0)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 9)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", 50, 100)
+        Game.SURVIVING_CREATURE_PLAYER_REWARD = 0
     ENDIF
-    IF(PLAYER3, FLAG2 > 0)
-        ADD_TO_FLAG(PLAYER3, FLAG2, -1)
+    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD > 0)
+        Game.SURVIVING_CREATURE_PLAYER_REWARD = Game.SURVIVING_CREATURE_PLAYER_REWARD -1
     ENDIF
 ENDIF
+
+end 
+
+function prepPhase()
+
+end
+
+
+
+function activateCreatureBoxes ()
+
+    boxId = 0
+    for _, cr in ipairs(Creatures) do
+        if cr.SpecialBoxId == boxId then
+            if(PLAYER0.MONEY >= cr.cost) then
+                creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
+                creature.owner = PLAYER0
+                break
+            else
+                --not enough money, ignore box
+                break
+            end
+
+            
+        end
+    end
+
+
+    -- Replace Reset- and FREE-IMP-Box
+    IF(PLAYER0, BOX19_ACTIVATED == 2)
+        NEXT_COMMAND_REUSABLE
+        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 139, 19, PLAYER0) --"RESET ROUND, no money refund!"
+        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 145, 20, PLAYER0)--"FREE IMP"
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(PLAYER0, BOX19_ACTIVATED, 0)
+    ENDIF
+    IF(PLAYER0, BOX20_ACTIVATED == 2)
+        NEXT_COMMAND_REUSABLE
+        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 145, 20, PLAYER0)--"FREE IMP"
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(PLAYER0, BOX20_ACTIVATED, 0)
+    ENDIF
+end
+
+
+
+function placeEnemyCreatures()
+--TODO ask Shinthoras the logic behind this
+    for i = 1, Game.Round, 1 do
+        if PLAYER.TOTAL_CREATURES < Game.Round then
+            local ap = math.random(10, 32)
+            local level = math.random(5, 9)
+            local type = Creatures[ math.random( #Creatures ) ].Creature_type
+            ADD_CREATURE_TO_LEVEL(PLAYER1, type, ap, 1, level, 0)
+        end
+    end
+
+end
