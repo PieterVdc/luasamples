@@ -53,6 +53,9 @@ local function get_creature_sfId(creature)
     end
 end
 
+---comment
+---@param sfId any
+---@return Creature
 local function get_creature_at_sfId(sfId)
     if Game.turn then
         return Game.ThingSfpos[sfId]
@@ -73,7 +76,7 @@ end
 
 --- comment
 --- @param creature Creature
-local function placeSpecialBoxes(creature)
+function placeSpecialBoxes(creature)
 
     local moves = Game.sfpos:genMoves()
 
@@ -96,14 +99,8 @@ local function placeSpecialBoxes(creature)
     end
 end
 
-local function unitSlapped()
-    print("unitSlapped")
-    Game.last_slapped_unit = GetTriggeringThing()
-
-    print("unitSlapped" .. tostring(Game.currentTriggeringThing) )
-
-    print(tostring(Game.last_slapped_unit))
-    
+function unitSlapped(eventData,triggerData)
+    Game.last_slapped_unit = eventData.Thing
     placeSpecialBoxes(Game.last_slapped_unit)
     
 end
@@ -123,7 +120,7 @@ local function movePiece(move)
         cr_j:KillCreature()
     end
 
-    cr_i:MoveThingTo(end_stl_x, end_stl_y)
+    cr_i:CreatureWalkTo(end_stl_x, end_stl_y)
 
     set_creature_at_sfId(j,cr_i)
     set_creature_at_sfId(i,nil)
@@ -140,27 +137,27 @@ local function movePiece(move)
         queen = ADD_CREATURE_TO_LEVEL(cr_i.owner,model,sfId_to_pos(move[2]),1,10,0)
         queen:MakeThingZombie()
         set_creature_at_sfId(j,queen)
-        queen:MoveThingTo(end_stl_x, end_stl_y)
-        local trigger = CreateTrigger()
+        queen:CreatureWalkTo(end_stl_x, end_stl_y)
+        local trigger = CreateTrigger("queen")
             TriggerRegisterThingEvent(trigger, queen, "powerCast")
             --TriggerAddCondition(trigger,function () return GetTriggeringSpellKind() == "POWER_SLAP" end)
-            TriggerAddAction(trigger, unitSlapped)
+            TriggerAddAction(trigger, "unitSlapped")
         cr_i:KillCreature()
+        return queen
     end
+
+    return cr_i
     
 
 end
 
-
-
-local function cpu_turn()
-
+function cpu_turn()
     local move, score = sf.search(Game.sfpos)
 
      -- print(move, score)
      assert(score)
      if score <= -sf.MATE_VALUE then
-        print("wibn")
+        print("win")
          WIN_GAME(PLAYER0)
          return
      end
@@ -171,21 +168,22 @@ local function cpu_turn()
      end
     
      assert(move)
-     movePiece(move)
+     local piece = movePiece(move)
     
-     SendChatMessage(PLAYER0, "My move:" .. sf.render(119 - move[0 + sf.__1]) .. sf.render(119 - move[1 + sf.__1]))
+     QUICK_MESSAGE("My move:" .. sf.render(119 - move[0 + sf.__1]) .. sf.render(119 - move[1 + sf.__1]),piece.model)
 
      Game.turn = true
      MAGIC_AVAILABLE(PLAYER0,"POWER_SLAP",true,true)
 
 end
 
-local function special_activated()
+function special_activated(eventData,triggerData)
+
 
     ---@type Thing
-    local box = GetTriggeringThing()
+    local box = eventData.Thing
 
-    local objects = get_things_of_class("Object")
+    local objects = getThingsOfClass("Object")
     for i,_ in pairs(objects) do
 
         if objects[i].model == "SPECBOX_CUSTOM" then
@@ -204,20 +202,9 @@ local function special_activated()
 
     Game.turn = false
 
-    local trigger = CreateTrigger()
-        TriggerRegisterTimerEvent(trigger,40,false)
-        TriggerAddAction(trigger, cpu_turn)
-
-    
+    RegisterTimerEvent("cpu_turn",40,false)    
 
 end
-
-
-
-
-
-
-
 
 function OnGameStart()
 
@@ -225,7 +212,7 @@ function OnGameStart()
     Game.ThingSfpos = {}
 
     ---@type Creature[]
-    local creatures = get_things_of_class("Creature")
+    local creatures = getThingsOfClass("Creature")
 
     for i,_ in pairs(creatures) do
 
@@ -233,24 +220,15 @@ function OnGameStart()
 
         if(cr.owner == PLAYER_GOOD) then
             cr.orientation = 1024
-            
         end
         cr:MakeThingZombie()
 
         Game.ThingSfpos[pos_to_sfId(cr.pos)] = cr
-        
-        local trigger = CreateTrigger()
-            TriggerRegisterThingEvent(trigger, creatures[i], "powerCast")
-            --TriggerAddCondition(trigger,function () return GetTriggeringSpellKind() == "POWER_SLAP" end)
-            TriggerAddAction(trigger, unitSlapped)
 
     end
 
-    local trigger = CreateTrigger()
-        TriggerRegisterThingEvent(trigger, nil, "SpecialActivated")
-        TriggerAddAction(trigger, special_activated)
+    RegisterSpecialActivatedEvent("special_activated")
+    RegisterPowerCastEvent("unitSlapped","POWER_SLAP")
 
     Game.sfpos = sf.Position.new(sf.initial, 0, { true, true }, { true, true }, 0, 0)
-
-
 end
