@@ -23,16 +23,35 @@ local Creatures = {
     {Creature_type = "VAMPIRE",      BoxToolTip = "VAMPIRE",       SpecialBoxId = 17, Row = 3, column = 6, cost = 600 , levelRange = {4,10}},
 }
 
+local ROWS_COUNT = 3
 
 local columns = {
-    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43},
-    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44},
-    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45},
-    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46},
-    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47},
-    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48},
+    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, currentCreatureInColumn = nil},
+    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44, boxAp = 33, currentCreatureInColumn = nil},
+    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45, boxAp = 34, currentCreatureInColumn = nil},
+    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46, boxAp = 35, currentCreatureInColumn = nil},
+    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47, boxAp = 36, currentCreatureInColumn = nil},
+    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48, boxAp = 37, currentCreatureInColumn = nil},
 }
 
+
+function select_units_in_columns()
+    for index, col in ipairs(columns) do
+        rownNo = math.random(ROWS_COUNT)
+        for _, cr in ipairs(Creatures) do
+            if cr.column == index and cr.Row == rownNo then
+                col.currentCreatureInColumn = cr
+
+                ADD_OBJECT_TO_LEVEL(SPECBOX_CUSTOM, col.boxAp, cr.SpecialBoxId, PLAYER0)
+                
+                local level = math.random(cr.levelRange[1], cr.levelRange[2])
+                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, cr.spawnCreatureAp, 1, DRAWFROM(2 ~ 8), 0)
+
+                break
+            end
+        end
+    end
+end
 
 function initialise()
     Game.FIGHT_PHASE_ENDED = 1
@@ -63,11 +82,11 @@ function initialise()
     SET_CREATURE_INSTANCE(GHOST, 5, RANGED_REBOUND, 5)
     SET_CREATURE_INSTANCE(TIME_MAGE, 8, RANGED_SPEED, 6)
     SET_CREATURE_INSTANCE(IMP, 1, NULL, 1)
-    MAGIC_AVAILABLE(PLAYER0, POWER_IMP, 0, 0)
-    MAGIC_AVAILABLE(PLAYER1, POWER_IMP, 0, 0)
-    MAGIC_AVAILABLE(PLAYER1, POWER_HAND, 0, 0)
-    MAGIC_AVAILABLE(PLAYER1, POWER_SLAP, 0, 0)
-    MAGIC_AVAILABLE(PLAYER0, POWER_POSSESS, 0, 0)
+    MAGIC_AVAILABLE(PLAYER0, "POWER_IMP", 0, 0)
+    MAGIC_AVAILABLE(PLAYER1, "POWER_IMP", 0, 0)
+    MAGIC_AVAILABLE(PLAYER1, "POWER_HAND", 0, 0)
+    MAGIC_AVAILABLE(PLAYER1, "POWER_SLAP", 0, 0)
+    MAGIC_AVAILABLE(PLAYER0, "POWER_POSSESS", 0, 0)
     SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, DestroyOnLava, 1)
     SET_OBJECT_CONFIGURATION(CTA_ENSIGN, MaximumSize, 1)
     SET_CREATURE_CONFIGURATION(TUNNELLER, Stand, 556)
@@ -185,44 +204,102 @@ ENDIF
 end 
 
 function prepPhase()
-
+    SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)
+    SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)
+    SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)
+    SET_PLAYER_MODIFIER(PLAYER1, Strength, 100)
+    SET_TIMER(PLAYER0, TIMER5)
+    SET_FLAG(Game.CTA_FLAGS, 0)
+    DISPLAY_COUNTDOWN(PLAYER0, TIMER6, 1, 0)
+    MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 0, 0)
+    MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 0, 0)
+    SET_CREATURE_CONFIGURATION(TUNNELLER, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(BILE_DEMON, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(BUG, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(DARK_MISTRESS, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(DEMONSPAWN, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(DRAGON, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(DRUID, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(FLY, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(GHOST, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(HELL_HOUND, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(HORNY, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(ORC, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(SKELETON, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(SORCEROR, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(SPIDER, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(TENTACLE, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(TIME_MAGE, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(TROLL, BaseSpeed, 0)
+    SET_CREATURE_CONFIGURATION(VAMPIRE, BaseSpeed, 0)
+    MAGIC_AVAILABLE(PLAYER0, POWER_HAND, 1, 1)
+    SET_GAME_RULE(BodyRemainsFor, 1)
+    REM SPECIAL ROUND RESTART
+    IF(PLAYER0, BOX19_ACTIVATED == 1)
+        NEXT_COMMAND_REUSABLE
+        USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
+        NEXT_COMMAND_REUSABLE
+        MOVE_CREATURE(PLAYER0, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_RED)
+        NEXT_COMMAND_REUSABLE
+        MOVE_CREATURE(PLAYER1, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_BLUE)
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(Game.Player1CreatureCount, 0)
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(Game.CREATURE_RANDOM, 3)
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(PLAYER0, BOX19_ACTIVATED, 2)
+    ENDIF
+    REM SPECIAL ADD FREE IMP
+    IF(PLAYER0, BOX20_ACTIVATED == 1)
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(Game.CREATURE_RANDOM, 3)
+        NEXT_COMMAND_REUSABLE
+        ADD_CREATURE_TO_LEVEL(PLAYER0, TUNNELLER, 49, 1, 1, 0)
+        NEXT_COMMAND_REUSABLE
+        SET_FLAG(PLAYER0, BOX20_ACTIVATED, 2)
+    ENDIF
+ENDIF
 end
 
 
+local function reset_round()
+    USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
+    MOVE_CREATURE(PLAYER0, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_RED)
+    MOVE_CREATURE(PLAYER1, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_BLUE)
+    SET_FLAG(PLAYER1, FLAG4, 0)
+    SET_FLAG(PLAYER0, FLAG4, 3)
+    SET_FLAG(PLAYER0, BOX19_ACTIVATED, 2)
+end
 
-function activateCreatureBoxes ()
+local function spawn_imp()
+    SET_FLAG(PLAYER0, FLAG4, 3)
+    ADD_CREATURE_TO_LEVEL(PLAYER0, "TUNNELLER", 49, 1, 1, 0)
+end
 
-    boxId = 0
-    for _, cr in ipairs(Creatures) do
-        if cr.SpecialBoxId == boxId then
-            if(PLAYER0.MONEY >= cr.cost) then
-                creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
-                creature.owner = PLAYER0
-                break
-            else
-                --not enough money, ignore box
-                break
+function Special_activated ()
+
+    
+    if(triggerData.SpecialBoxId == 19) then --"RESET ROUND, no money refund!"
+        ADD_OBJECT_TO_LEVEL_AT_POS("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
+        reset_round()
+    
+    else if(triggerData.SpecialBoxId == 20) then --"FREE IMP"
+        ADD_OBJECT_TO_LEVEL_AT_POS("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
+        spawn_imp()
+    else
+        for _, cr in ipairs(Creatures) do
+            if cr.SpecialBoxId == triggerData.SpecialBoxId then
+                if(PLAYER0.MONEY >= cr.cost) then
+                    creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
+                    creature.owner = PLAYER0
+                    break
+                else
+                    --not enough money, ignore box
+                    break
+                end
             end
-
-            
         end
     end
-
-
-    -- Replace Reset- and FREE-IMP-Box
-    IF(PLAYER0, BOX19_ACTIVATED == 2)
-        NEXT_COMMAND_REUSABLE
-        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 139, 19, PLAYER0) --"RESET ROUND, no money refund!"
-        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 145, 20, PLAYER0)--"FREE IMP"
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(PLAYER0, BOX19_ACTIVATED, 0)
-    ENDIF
-    IF(PLAYER0, BOX20_ACTIVATED == 2)
-        NEXT_COMMAND_REUSABLE
-        ADD_OBJECT_TO_LEVEL_AT_POS(SPECBOX_CUSTOM, 115, 145, 20, PLAYER0)--"FREE IMP"
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(PLAYER0, BOX20_ACTIVATED, 0)
-    ENDIF
 end
 
 
@@ -232,10 +309,30 @@ function placeEnemyCreatures()
     for i = 1, Game.Round, 1 do
         if PLAYER.TOTAL_CREATURES < Game.Round then
             local ap = math.random(10, 32)
-            local level = math.random(5, 9)
-            local type = Creatures[ math.random( #Creatures ) ].Creature_type
-            ADD_CREATURE_TO_LEVEL(PLAYER1, type, ap, 1, level, 0)
+            local cr = Creatures[ math.random( #Creatures ) ]
+            local level = math.random(cr.levelRange[1], cr.levelRange[2])
+            ADD_CREATURE_TO_LEVEL(PLAYER1, cr.Creature_type, ap, 1, level, 0)
         end
     end
+
+end
+
+function drawPrices()
+    for index, col in ipairs(columns) do
+        if col.currentCreatureInColumn == nil then
+            return
+        end
+        CREATE_EFFECT(EFFECTELEMENT_PRICE, col.displayCostAp, col.currentCreatureInColumn.cost)
+    end
+end
+
+function OnGameStart()
+
+    initialise()
+    RegisterSpecialActivatedEvent(special_activated)
+    RegisterTimerEvent(drawPrices,25,true)
+    
+
+
 
 end
