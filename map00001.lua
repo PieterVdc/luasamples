@@ -170,7 +170,7 @@ function cpu_turn()
      assert(move)
      local piece = movePiece(move)
     
-     QUICK_MESSAGE("My move:" .. sf.render(119 - move[0 + sf.__1]) .. sf.render(119 - move[1 + sf.__1]),piece.model)
+     QUICK_MESSAGE(("My move:" .. sf.render(119 - move[0 + sf.__1]) .. sf.render(119 - move[1 + sf.__1])),piece)
 
      Game.turn = true
      MAGIC_AVAILABLE(PLAYER0,"POWER_SLAP",true,true)

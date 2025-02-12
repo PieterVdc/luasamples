@@ -42,10 +42,10 @@ function select_units_in_columns()
             if cr.column == index and cr.Row == rownNo then
                 col.currentCreatureInColumn = cr
 
-                ADD_OBJECT_TO_LEVEL(SPECBOX_CUSTOM, col.boxAp, cr.SpecialBoxId, PLAYER0)
+                ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
                 
                 local level = math.random(cr.levelRange[1], cr.levelRange[2])
-                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, cr.spawnCreatureAp, 1, DRAWFROM(2 ~ 8), 0)
+                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, cr.spawnCreatureAp, 1, level, 0)
 
                 break
             end
@@ -72,10 +72,12 @@ function initialise()
     SET_BOX_TOOLTIP(19, "RESET ROUND, no money refund!")
     SET_BOX_TOOLTIP(20, "FREE IMP")
 
-    QUICK_OBJECTIVE(1, "This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
+    QUICK_OBJECTIVE("This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
 
     CONCEAL_MAP_RECT(PLAYER0, 133, 121, 100, 100, 1)
-    REVEAL_MAP_LOCATION(PLAYER0, PLAYER0, 18)
+
+    REVEAL_MAP_LOCATION(PLAYER0, "PLAYER0", 18)
+    --[[
     SET_CREATURE_INSTANCE(DRUID, 2, RANGED_HEAL, 2)
     SET_CREATURE_INSTANCE(DRUID, 3, SLOW, 3)
     SET_CREATURE_INSTANCE(DRUID, 5, RANGED_ARMOUR, 5)
@@ -120,7 +122,7 @@ function initialise()
     SET_CREATURE_CONFIGURATION(TUNNELLER, Defence, 7)
     SET_CREATURE_CONFIGURATION(TUNNELLER, Luck, 0)
     SET_CREATURE_CONFIGURATION(TUNNELLER, SlapsToKill, 5)
-    SET_CREATURE_PROPERTY(TUNNELLER, SPECIAL_DIGGER, 0)
+    SET_CREATURE_PROPERTY("TUNNELLER", "SPECIAL_DIGGER", 0)
     SET_CREATURE_FEAR(BILE_DEMON, 0)
     SET_CREATURE_FEAR(BUG, 0)
     SET_CREATURE_FEAR(DARK_MISTRESS, 0)
@@ -142,7 +144,8 @@ function initialise()
     SET_CREATURE_FEAR(VAMPIRE, 0)
 
     SET_GAME_RULE(DungeonHeartHealHealth, 0)
-    SET_TIMER(PLAYER0, TIMER6)
+    ]]
+    SET_TIMER(PLAYER0, "TIMER6")
 
 end
 
@@ -159,136 +162,124 @@ function damageHeart(player)
         Game.player1heartEffectCounter = (Game.player1heartEffectCounter + 1) % 9
         location = Game.player1heartEffectCounter + 50
     end
-    ADD_HEART_HEALTH(player, -2000)
+    --ADD_HEART_HEALTH(player, -2000)
     CREATE_EFFECTS_LINE(location, player, 0, 3, 5, effect)
 
 end
 
 function processPlayerReward(creatures_remaining)
--- REWARD for PLAYER
-IF(Game.SURVIVING_CREATURE_PLAYER_REWARD > 0)
-    ADD_GOLD_TO_PLAYER(PLAYER0, 100)
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 1)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 59, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 2)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 60, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 3)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 68, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 4)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 69, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 5)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 70, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 6)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 71, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 7)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 72, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 8)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 73, 100)
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD == 9)
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", 50, 100)
-        Game.SURVIVING_CREATURE_PLAYER_REWARD = 0
-    ENDIF
-    IF(Game.SURVIVING_CREATURE_PLAYER_REWARD > 0)
-        Game.SURVIVING_CREATURE_PLAYER_REWARD = Game.SURVIVING_CREATURE_PLAYER_REWARD -1
-    ENDIF
-ENDIF
+    -- REWARD for PLAYER
+    if (Game.SURVIVING_CREATURE_PLAYER_REWARD > 0) then
+        ADD_GOLD_TO_PLAYER(PLAYER0, 100)
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 1) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 59, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 2) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 60, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 3) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 68, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 4) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 69, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 5) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 70, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 6) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 71, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 7) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 72, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 8) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 73, 100)
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 9) then
+            CREATE_EFFECT("EFFECTELEMENT_PRICE", 50, 100)
+            Game.SURVIVING_CREATURE_PLAYER_REWARD = 0
+        end
+        if (Game.SURVIVING_CREATURE_PLAYER_REWARD > 0) then
+            Game.SURVIVING_CREATURE_PLAYER_REWARD = Game.SURVIVING_CREATURE_PLAYER_REWARD -1
+        end
+    end
 
 end 
 
 function prepPhase()
-    SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)
-    SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)
-    SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)
-    SET_PLAYER_MODIFIER(PLAYER1, Strength, 100)
-    SET_TIMER(PLAYER0, TIMER5)
-    SET_FLAG(Game.CTA_FLAGS, 0)
-    DISPLAY_COUNTDOWN(PLAYER0, TIMER6, 1, 0)
-    MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 0, 0)
-    MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 0, 0)
-    SET_CREATURE_CONFIGURATION(TUNNELLER, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(BILE_DEMON, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(BUG, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(DARK_MISTRESS, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(DEMONSPAWN, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(DRAGON, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(DRUID, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(FLY, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(GHOST, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(HELL_HOUND, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(HORNY, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(ORC, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(SKELETON, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(SORCEROR, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(SPIDER, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(TENTACLE, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(TIME_MAGE, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(TROLL, BaseSpeed, 0)
-    SET_CREATURE_CONFIGURATION(VAMPIRE, BaseSpeed, 0)
-    MAGIC_AVAILABLE(PLAYER0, POWER_HAND, 1, 1)
-    SET_GAME_RULE(BodyRemainsFor, 1)
-    REM SPECIAL ROUND RESTART
-    IF(PLAYER0, BOX19_ACTIVATED == 1)
-        NEXT_COMMAND_REUSABLE
-        USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
-        NEXT_COMMAND_REUSABLE
-        MOVE_CREATURE(PLAYER0, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_RED)
-        NEXT_COMMAND_REUSABLE
-        MOVE_CREATURE(PLAYER1, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_BLUE)
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(Game.Player1CreatureCount, 0)
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(Game.CREATURE_RANDOM, 3)
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(PLAYER0, BOX19_ACTIVATED, 2)
-    ENDIF
-    REM SPECIAL ADD FREE IMP
-    IF(PLAYER0, BOX20_ACTIVATED == 1)
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(Game.CREATURE_RANDOM, 3)
-        NEXT_COMMAND_REUSABLE
-        ADD_CREATURE_TO_LEVEL(PLAYER0, TUNNELLER, 49, 1, 1, 0)
-        NEXT_COMMAND_REUSABLE
-        SET_FLAG(PLAYER0, BOX20_ACTIVATED, 2)
-    ENDIF
-ENDIF
-end
+    
+    --SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)
+    --SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)
+    --SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)
+    --SET_PLAYER_MODIFIER(PLAYER1, Strength, 100)
+    --SET_TIMER(PLAYER0, TIMER5)
+    --SET_FLAG(Game.CTA_FLAGS, 0)
+    --DISPLAY_COUNTDOWN(PLAYER0, TIMER6, 1, 0)
+    --MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 0, 0)
+    --MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 0, 0)
+    --SET_CREATURE_CONFIGURATION(TUNNELLER, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(BILE_DEMON, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(BUG, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(DARK_MISTRESS, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(DEMONSPAWN, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(DRAGON, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(DRUID, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(FLY, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(GHOST, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(HELL_HOUND, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(HORNY, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(ORC, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(SKELETON, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(SORCEROR, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(SPIDER, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(TENTACLE, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(TIME_MAGE, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(TROLL, BaseSpeed, 0)
+    --SET_CREATURE_CONFIGURATION(VAMPIRE, BaseSpeed, 0)
+    --MAGIC_AVAILABLE(PLAYER0, POWER_HAND, 1, 1)
+    --SET_GAME_RULE(BodyRemainsFor, 1)
+    -- SPECIAL ROUND RESTART
+    
 
+end
 
 local function reset_round()
     USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
-    MOVE_CREATURE(PLAYER0, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_RED)
-    MOVE_CREATURE(PLAYER1, ANY_CREATURE, AT_ACTION_POINT[63], 20, PLAYER_GOOD, EFFECT_BALL_PUFF_BLUE)
-    SET_FLAG(PLAYER1, FLAG4, 0)
-    SET_FLAG(PLAYER0, FLAG4, 3)
-    SET_FLAG(PLAYER0, BOX19_ACTIVATED, 2)
+    --getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
+    --getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
 end
 
 local function spawn_imp()
-    SET_FLAG(PLAYER0, FLAG4, 3)
+    --SET_FLAG(PLAYER0, FLAG4, 3)
     ADD_CREATURE_TO_LEVEL(PLAYER0, "TUNNELLER", 49, 1, 1, 0)
 end
 
-function Special_activated ()
-
+local function start_level()
+    REVEAL_MAP_RECT(PLAYER0, 133, 121, 70, 70)
     
-    if(triggerData.SpecialBoxId == 19) then --"RESET ROUND, no money refund!"
+    --SET_FLAG(PLAYER0, BOX19_ACTIVATED, 1)
+    -- Display count of placeable Creatures
+    --DISPLAY_VARIABLE(Game.PLAYER_COUNTER_CREATURE, Game.MaxCreatures, 0)
+
+    --IF(Game.PREPARNG_PHASE == 0)
+    --    NEXT_COMMAND_REUSABLE
+    --    HIDE_VARIABLE
+    --ENDIF
+end
+
+function special_activated (eventData,triggerData)
+
+    if eventData.SpecialBoxId == 18 then --START GAME
+        start_level()
+    elseif eventData.SpecialBoxId == 19 then --"RESET ROUND, no money refund!"
         ADD_OBJECT_TO_LEVEL_AT_POS("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
         reset_round()
-    
-    else if(triggerData.SpecialBoxId == 20) then --"FREE IMP"
+    elseif eventData.SpecialBoxId == 20 then --"FREE IMP"
         ADD_OBJECT_TO_LEVEL_AT_POS("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
         spawn_imp()
     else
         for _, cr in ipairs(Creatures) do
-            if cr.SpecialBoxId == triggerData.SpecialBoxId then
+            if cr.SpecialBoxId == eventData.SpecialBoxId then
                 if(PLAYER0.MONEY >= cr.cost) then
                     creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
                     creature.owner = PLAYER0
@@ -302,8 +293,6 @@ function Special_activated ()
     end
 end
 
-
-
 function placeEnemyCreatures()
 --TODO ask Shinthoras the logic behind this
     for i = 1, Game.Round, 1 do
@@ -314,7 +303,6 @@ function placeEnemyCreatures()
             ADD_CREATURE_TO_LEVEL(PLAYER1, cr.Creature_type, ap, 1, level, 0)
         end
     end
-
 end
 
 function drawPrices()
@@ -322,17 +310,12 @@ function drawPrices()
         if col.currentCreatureInColumn == nil then
             return
         end
-        CREATE_EFFECT(EFFECTELEMENT_PRICE, col.displayCostAp, col.currentCreatureInColumn.cost)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", col.displayCostAp, col.currentCreatureInColumn.cost)
     end
 end
 
 function OnGameStart()
-
     initialise()
-    RegisterSpecialActivatedEvent(special_activated)
-    RegisterTimerEvent(drawPrices,25,true)
-    
-
-
-
+    RegisterSpecialActivatedEvent("special_activated")
+    RegisterTimerEvent("drawPrices",25,true)
 end
