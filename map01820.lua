@@ -3,7 +3,7 @@
 local Creatures = {
     {Creature_type = "BILE_DEMON",   BoxToolTip = "BILE DEMON",    SpecialBoxId = 0,  Row = 1, column = 1, cost = 250 , levelRange = {2,8} },
     {Creature_type = "BUG",          BoxToolTip = "BUG",           SpecialBoxId = 1,  Row = 1, column = 2, cost = 50  , levelRange = {6,10}},
-    {Creature_type = "DARK_MISTRES", BoxToolTip = "DARK MISTRES",  SpecialBoxId = 2,  Row = 1, column = 3, cost = 450 , levelRange = {4,8} },
+    {Creature_type = "DARK_MISTRESS",BoxToolTip = "DARK MISTRESS", SpecialBoxId = 2,  Row = 1, column = 3, cost = 450 , levelRange = {4,8} },
     {Creature_type = "DEMONSPAWN",   BoxToolTip = "DEMONSPAWN",    SpecialBoxId = 3,  Row = 1, column = 4, cost = 180 , levelRange = {4,10}},
     {Creature_type = "DRAGON",       BoxToolTip = "DRAGON",        SpecialBoxId = 4,  Row = 1, column = 5, cost = 700 , levelRange = {4,8} },
     {Creature_type = "DRUID",        BoxToolTip = "DRUID",         SpecialBoxId = 5,  Row = 1, column = 6, cost = 350 , levelRange = {3,8} },
@@ -26,12 +26,12 @@ local Creatures = {
 local ROWS_COUNT = 3
 
 local columns = {
-    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, currentCreatureInColumn = nil},
-    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44, boxAp = 33, currentCreatureInColumn = nil},
-    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45, boxAp = 34, currentCreatureInColumn = nil},
-    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46, boxAp = 35, currentCreatureInColumn = nil},
-    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47, boxAp = 36, currentCreatureInColumn = nil},
-    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48, boxAp = 37, currentCreatureInColumn = nil},
+    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, type = nil, creature = nil},
+    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44, boxAp = 33, type = nil, creature = nil},
+    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45, boxAp = 34, type = nil, creature = nil},
+    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46, boxAp = 35, type = nil, creature = nil},
+    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47, boxAp = 36, type = nil, creature = nil},
+    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48, boxAp = 37, type = nil, creature = nil},
 }
 
 
@@ -40,12 +40,12 @@ function select_units_in_columns()
         rownNo = math.random(ROWS_COUNT)
         for _, cr in ipairs(Creatures) do
             if cr.column == index and cr.Row == rownNo then
-                col.currentCreatureInColumn = cr
-
+                col.type = cr
                 ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
                 
                 local level = math.random(cr.levelRange[1], cr.levelRange[2])
-                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
+                print(cr.Creature_type)
+                col.creature = ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
 
                 break
             end
@@ -67,11 +67,11 @@ function initialise()
 
     QUICK_OBJECTIVE("This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
 
-    CONCEAL_MAP_RECT(PLAYER0, 133, 121, 100, 100, 1)
+    CONCEAL_MAP_RECT(PLAYER0, 133, 121, 100, 100, true)
 
     REVEAL_MAP_LOCATION(PLAYER0, "PLAYER0", 18)
     COMPUTER_PLAYER(PLAYER1, 0)
-    SET_COMPUTER_GLOBALS(PLAYER1, 0, 0, 0, 0, 0, 0, 0)
+    --SET_COMPUTER_GLOBALS(PLAYER1, 0, 0, 0, 0, 0, 0, 0)
     
     START_MONEY(PLAYER0, 2000)
 
@@ -235,49 +235,49 @@ end
 
 function start_fight_phase()
 
-    REM Fight phase
-    if Game.FIGHT_PHASE_ENDED == 0)
-        CHANGE_SLAB_TYPE(40, 40, BRIDGE_FRAME, MATCH)
-        if Game.CTA_FLAGS == 0)
-            USE_POWER_AT_LOCATION(PLAYER0, 63, POWER_CALL_TO_ARMS, 3, 1)
-            USE_POWER_AT_LOCATION(PLAYER1, 63, POWER_CALL_TO_ARMS, 3, 1)
-            DISPLAY_COUNTDOWN(PLAYER0, TIMER5, 860, 1)
-            SET_FLAG(Game.CTA_FLAGS, 1)
-        end
-        MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 1, 1)
-        MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 1, 1)
-        if PLAYER0, TIMER5 > 860)
-        USE_POWER_AT_POS(PLAYER0,91,37,POWER_CAVE_IN,1,1)
-            SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 500)
-            SET_PLAYER_MODIFIER(PLAYER0, Strength, 500)
-            SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 500)
-            SET_PLAYER_MODIFIER(PLAYER1, Strength, 500)
-        end
-
-    end
-
-
-    SET_GAME_RULE("BodyRemainsFor", 2000)
-    SET_CREATURE_CONFIGURATION("TUNNELLER",     "BaseSpeed", 96)
-    SET_CREATURE_CONFIGURATION("BILE_DEMON",    "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("BUG",           "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("DARK_MISTRESS", "BaseSpeed", 64)
-    SET_CREATURE_CONFIGURATION("DEMONSPAWN",    "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("DRAGON",        "BaseSpeed", 32)
-    SET_CREATURE_CONFIGURATION("DRUID",         "BaseSpeed", 32)
-    SET_CREATURE_CONFIGURATION("FLY",           "BaseSpeed", 128)
-    SET_CREATURE_CONFIGURATION("GHOST",         "BaseSpeed", 64)
-    SET_CREATURE_CONFIGURATION("HELL_HOUND",    "BaseSpeed", 96)
-    SET_CREATURE_CONFIGURATION("HORNY",         "BaseSpeed", 96)
-    SET_CREATURE_CONFIGURATION("ORC",           "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("SKELETON",      "BaseSpeed", 64)
-    SET_CREATURE_CONFIGURATION("SORCEROR",      "BaseSpeed", 32)
-    SET_CREATURE_CONFIGURATION("SPIDER",        "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("TENTACLE",      "BaseSpeed", 32)
-    SET_CREATURE_CONFIGURATION("TIME_MAGE",     "BaseSpeed", 32)
-    SET_CREATURE_CONFIGURATION("TROLL",         "BaseSpeed", 48)
-    SET_CREATURE_CONFIGURATION("VAMPIRE",       "BaseSpeed", 56)
-    MAGIC_AVAILABLE(PLAYER0, "POWER_HAND", 0, 0)
+    ---- Fight phase
+    --if Game.FIGHT_PHASE_ENDED == 0 then
+    --    CHANGE_SLAB_TYPE(40, 40, BRIDGE_FRAME, MATCH)
+    --    if Game.CTA_FLAGS == 0
+    --        USE_POWER_AT_LOCATION(PLAYER0, 63, POWER_CALL_TO_ARMS, 3, 1)
+    --        USE_POWER_AT_LOCATION(PLAYER1, 63, POWER_CALL_TO_ARMS, 3, 1)
+    --        DISPLAY_COUNTDOWN(PLAYER0, TIMER5, 860, 1)
+    --        SET_FLAG(Game.CTA_FLAGS, 1)
+    --    end
+    --    MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 1, 1)
+    --    MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 1, 1)
+    --    if PLAYER0, TIMER5 > 860)
+    --    USE_POWER_AT_POS(PLAYER0,91,37,POWER_CAVE_IN,1,1)
+    --        SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 500)
+    --        SET_PLAYER_MODIFIER(PLAYER0, Strength, 500)
+    --        SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 500)
+    --        SET_PLAYER_MODIFIER(PLAYER1, Strength, 500)
+    --    end
+--
+    --end
+--
+--
+    --SET_GAME_RULE("BodyRemainsFor", 2000)
+    --SET_CREATURE_CONFIGURATION("TUNNELLER",     "BaseSpeed", 96)
+    --SET_CREATURE_CONFIGURATION("BILE_DEMON",    "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("BUG",           "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("DARK_MISTRESS", "BaseSpeed", 64)
+    --SET_CREATURE_CONFIGURATION("DEMONSPAWN",    "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("DRAGON",        "BaseSpeed", 32)
+    --SET_CREATURE_CONFIGURATION("DRUID",         "BaseSpeed", 32)
+    --SET_CREATURE_CONFIGURATION("FLY",           "BaseSpeed", 128)
+    --SET_CREATURE_CONFIGURATION("GHOST",         "BaseSpeed", 64)
+    --SET_CREATURE_CONFIGURATION("HELL_HOUND",    "BaseSpeed", 96)
+    --SET_CREATURE_CONFIGURATION("HORNY",         "BaseSpeed", 96)
+    --SET_CREATURE_CONFIGURATION("ORC",           "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("SKELETON",      "BaseSpeed", 64)
+    --SET_CREATURE_CONFIGURATION("SORCEROR",      "BaseSpeed", 32)
+    --SET_CREATURE_CONFIGURATION("SPIDER",        "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("TENTACLE",      "BaseSpeed", 32)
+    --SET_CREATURE_CONFIGURATION("TIME_MAGE",     "BaseSpeed", 32)
+    --SET_CREATURE_CONFIGURATION("TROLL",         "BaseSpeed", 48)
+    --SET_CREATURE_CONFIGURATION("VAMPIRE",       "BaseSpeed", 56)
+    MAGIC_AVAILABLE(PLAYER0, "POWER_HAND", false, false)
 end
 
 function start_prep_phase()
@@ -321,8 +321,8 @@ end
 
 local function reset_round()
     USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
-    getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
-    getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
+    --getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
+    --getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
 end
 
 local function spawn_imp()
@@ -351,10 +351,11 @@ function special_activated (eventData,triggerData)
     else
         for _, cr in ipairs(Creatures) do
             if cr.SpecialBoxId == eventData.SpecialBoxId then
-                if PLAYER0.MONEY >= cr.cost) then
-                    creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
-                    creature.owner = PLAYER0
+                if PLAYER0.MONEY >= cr.cost then
+                    columns[cr.column].creature.owner = PLAYER0
+                    PLAYER0:ADD_GOLD(-cr.cost)
                     break
+
                 else
                     --not enough money, ignore box
                     break
@@ -378,10 +379,10 @@ end
 
 function drawPrices()
     for index, col in ipairs(columns) do
-        if col.currentCreatureInColumn == nil then
+        if col.creature == nil then
             return
         end
-        CREATE_EFFECT("EFFECTELEMENT_PRICE", col.displayCostAp, col.currentCreatureInColumn.cost)
+        CREATE_EFFECT("EFFECTELEMENT_PRICE", col.displayCostAp, col.type.cost)
     end
 end
 
