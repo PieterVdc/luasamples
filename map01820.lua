@@ -70,6 +70,11 @@ function initialise()
     CONCEAL_MAP_RECT(PLAYER0, 133, 121, 100, 100, 1)
 
     REVEAL_MAP_LOCATION(PLAYER0, "PLAYER0", 18)
+    COMPUTER_PLAYER(PLAYER1, 0)
+    SET_COMPUTER_GLOBALS(PLAYER1, 0, 0, 0, 0, 0, 0, 0)
+    
+    START_MONEY(PLAYER0, 2000)
+
     --[[
     SET_CREATURE_INSTANCE(DRUID, 2, RANGED_HEAL, 2)
     SET_CREATURE_INSTANCE(DRUID, 3, SLOW, 3)
@@ -143,7 +148,7 @@ function initialise()
 end
 
 
-function damageHeart(player)
+function damageHeart_effect(player)
     local location
     local effect
     if player == PLAYER0 then
@@ -158,6 +163,35 @@ function damageHeart(player)
     --ADD_HEART_HEALTH(player, -2000)
     CREATE_EFFECTS_LINE(location, player, 0, 3, 5, effect)
 
+end
+
+function damageHeart()
+    -- Evaluation phase
+    -- Process heart damage
+    if PLAYER0.TOTAL_CREATURES == 0 then
+        if PLAYER1.TOTAL_CREATURES > 0 then
+            damageHeart_effect(PLAYER0)
+        end
+
+        ADD_TO_FLAG(Game.WINFLAG_FOR_COMPUTER, 1)
+        SET_FLAG(Game.END_PASE, 1)
+        CREATE_EFFECTS_LINE(COMBAT, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
+        CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER0)
+        COMPUTE_FLAG(PLAYER3, FLAG6, SET, PLAYER1, HORNY, 0)
+    end
+    if PLAYER1.TOTAL_CREATURES == 0 then
+        if PLAYER0.TOTAL_CREATURES > 0 then
+            damageHeart_effect(PLAYER1)
+        end
+        processPlayerReward(PLAYER0.TOTAL_CREATURES)
+
+        ADD_TO_FLAG(Game.WINFLAG_FOR_PLAYER, 1)
+        SET_FLAG(Game.END_PASE, 1)
+        ADD_HEART_HEALTH(PLAYER1, -1500)
+        CREATE_EFFECTS_LINE(COMBAT, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
+        CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER1)
+    end
+    
 end
 
 function processPlayerReward(creatures_remaining)
@@ -198,6 +232,53 @@ function processPlayerReward(creatures_remaining)
     end
 
 end 
+
+function start_fight_phase()
+
+    REM Fight phase
+    if Game.FIGHT_PHASE_ENDED == 0)
+        CHANGE_SLAB_TYPE(40, 40, BRIDGE_FRAME, MATCH)
+        if Game.CTA_FLAGS == 0)
+            USE_POWER_AT_LOCATION(PLAYER0, 63, POWER_CALL_TO_ARMS, 3, 1)
+            USE_POWER_AT_LOCATION(PLAYER1, 63, POWER_CALL_TO_ARMS, 3, 1)
+            DISPLAY_COUNTDOWN(PLAYER0, TIMER5, 860, 1)
+            SET_FLAG(Game.CTA_FLAGS, 1)
+        end
+        MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 1, 1)
+        MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 1, 1)
+        if PLAYER0, TIMER5 > 860)
+        USE_POWER_AT_POS(PLAYER0,91,37,POWER_CAVE_IN,1,1)
+            SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 500)
+            SET_PLAYER_MODIFIER(PLAYER0, Strength, 500)
+            SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 500)
+            SET_PLAYER_MODIFIER(PLAYER1, Strength, 500)
+        end
+
+    end
+
+
+    SET_GAME_RULE("BodyRemainsFor", 2000)
+    SET_CREATURE_CONFIGURATION("TUNNELLER",     "BaseSpeed", 96)
+    SET_CREATURE_CONFIGURATION("BILE_DEMON",    "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("BUG",           "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("DARK_MISTRESS", "BaseSpeed", 64)
+    SET_CREATURE_CONFIGURATION("DEMONSPAWN",    "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("DRAGON",        "BaseSpeed", 32)
+    SET_CREATURE_CONFIGURATION("DRUID",         "BaseSpeed", 32)
+    SET_CREATURE_CONFIGURATION("FLY",           "BaseSpeed", 128)
+    SET_CREATURE_CONFIGURATION("GHOST",         "BaseSpeed", 64)
+    SET_CREATURE_CONFIGURATION("HELL_HOUND",    "BaseSpeed", 96)
+    SET_CREATURE_CONFIGURATION("HORNY",         "BaseSpeed", 96)
+    SET_CREATURE_CONFIGURATION("ORC",           "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("SKELETON",      "BaseSpeed", 64)
+    SET_CREATURE_CONFIGURATION("SORCEROR",      "BaseSpeed", 32)
+    SET_CREATURE_CONFIGURATION("SPIDER",        "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("TENTACLE",      "BaseSpeed", 32)
+    SET_CREATURE_CONFIGURATION("TIME_MAGE",     "BaseSpeed", 32)
+    SET_CREATURE_CONFIGURATION("TROLL",         "BaseSpeed", 48)
+    SET_CREATURE_CONFIGURATION("VAMPIRE",       "BaseSpeed", 56)
+    MAGIC_AVAILABLE(PLAYER0, "POWER_HAND", 0, 0)
+end
 
 function start_prep_phase()
     
@@ -240,8 +321,8 @@ end
 
 local function reset_round()
     USE_POWER(PLAYER_GOOD, POWER_HOLD_AUDIENCE, 1)
-    --getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
-    --getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
+    getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
+    getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
 end
 
 local function spawn_imp()
@@ -252,7 +333,7 @@ end
 local function start_level()
 
     Game.Round = 1
-    
+
     REVEAL_MAP_RECT(PLAYER0, 133, 121, 70, 70)
     start_prep_phase()
 end
@@ -270,7 +351,7 @@ function special_activated (eventData,triggerData)
     else
         for _, cr in ipairs(Creatures) do
             if cr.SpecialBoxId == eventData.SpecialBoxId then
-                if(PLAYER0.MONEY >= cr.cost) then
+                if PLAYER0.MONEY >= cr.cost) then
                     creature = getCreatureByCriterion("ALL_PLAYERS", "ANY_CREATURE", "AT_ACTION_POINT[" .. cr.changeOwnerAp .. "]")
                     creature.owner = PLAYER0
                     break
@@ -302,6 +383,48 @@ function drawPrices()
         end
         CREATE_EFFECT("EFFECTELEMENT_PRICE", col.displayCostAp, col.currentCreatureInColumn.cost)
     end
+end
+
+function game_end()
+    --IF(Game.MaxCreatures == 10)
+    --    HIDE_VARIABLE
+    --    if Game.WINFLAG_FOR_COMPUTER > Game.WINFLAG_FOR_PLAYER)
+    --        SET_HEART_HEALTH(PLAYER0, 0)
+    --        CREATE_EFFECTS_LINE(PLAYER1, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
+    --        LOSE_GAME
+    --        NEXT_COMMAND_REUSABLE
+    --        KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
+    --        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
+    --        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
+    --    end
+    --    if Game.WINFLAG_FOR_COMPUTER < Game.WINFLAG_FOR_PLAYER)
+    --        SET_HEART_HEALTH(PLAYER1, 0)
+    --        CREATE_EFFECTS_LINE(PLAYER0, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
+    --        WIN_GAME
+    --        NEXT_COMMAND_REUSABLE
+    --        KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
+    --        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
+    --        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
+    --    end
+    --end
+    --IF(PLAYER1, DUNGEON_DESTROYED == 1)
+    --    CREATE_EFFECTS_LINE(PLAYER0, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
+    --    HIDE_VARIABLE
+    --    WIN_GAME
+    --    NEXT_COMMAND_REUSABLE
+    --    KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
+    --    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
+    --    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
+    --end
+    --IF(PLAYER0, HEART_HEALTH < 100)
+    --    CREATE_EFFECTS_LINE(PLAYER1, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
+    --    HIDE_VARIABLE
+    --    LOSE_GAME
+    --    NEXT_COMMAND_REUSABLE
+    --    KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
+    --    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
+    --    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
+    --end
 end
 
 function OnGameStart()

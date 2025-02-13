@@ -99,42 +99,6 @@ REM PLAYER0,TIMER4 GOLD EFFECT TIMER
 REM PLAYER0,TIMER5 SUDDEN DEATH
 
 LEVEL_VERSION(1)
-COMPUTER_PLAYER(PLAYER1, 0)
-SET_COMPUTER_GLOBALS(PLAYER1, 0, 0, 0, 0, 0, 0, 0)
-REM Creatur costs average salary(mostly, execpt: DRAGON, HORNY, VAMPIRE)
-REM Player start money is average Creature Typ Cost = 6130
-START_MONEY(PLAYER0, 2000)
-
-IF(PLAYER0, BOX18_ACTIVATED == 1) rem START GAME
-    REVEAL_MAP_RECT(PLAYER0, 133, 121, 70, 70)
-    SET_FLAG(PLAYER0, BOX19_ACTIVATED, 1)
-    REM Display count of placeable Creatures
-
-    DISPLAY_VARIABLE(Game.PLAYER_COUNTER_CREATURE, Game.MaxCreatures, 0)
-
-    IF(Game.PREPARNG_PHASE == 0)
-        NEXT_COMMAND_REUSABLE
-        HIDE_VARIABLE
-    ENDIF
-ENDIF
-
-REM WTF
-NEXT_COMMAND_REUSABLE
-SET_FLAG(Game.PLAYER0_LEFT_CREATURE_COUNT, 0)
-NEXT_COMMAND_REUSABLE
-SET_FLAG(Game.PLAYER0_RIGHT_CREATURE_COUNT, 1)
-
-NEXT_COMMAND_REUSABLE
-SET_FLAG(Game.PLAYER_COUNTER_CREATURE, 0) rem PLAYER COUNTER CREATURE
-
-
-
-QUICK_OBJECTIVE(1, "This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
-
-NEXT_COMMAND_REUSABLE
-KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, AT_ACTION_POINT[64], 1)
-SET_GAME_RULE(DungeonHeartHealHealth, 0)
-SET_TIMER(PLAYER0, TIMER6)
 
 
 IF(PLAYER0, DUNGEON_DESTROYED == 0)
@@ -381,108 +345,10 @@ IF(PLAYER0, DUNGEON_DESTROYED == 0)
             ENDIF
         ENDIF
 
-        REM Fight phase
-        If(Game.FIGHT_PHASE_ENDED == 0)
-            NEXT_COMMAND_REUSABLE
-            CHANGE_SLAB_TYPE(40, 40, BRIDGE_FRAME, MATCH)
-            IF(Game.CTA_FLAGS == 0)
-                NEXT_COMMAND_REUSABLE
-                USE_POWER_AT_LOCATION(PLAYER0, 63, POWER_CALL_TO_ARMS, 3, 1)
-                NEXT_COMMAND_REUSABLE
-                USE_POWER_AT_LOCATION(PLAYER1, 63, POWER_CALL_TO_ARMS, 3, 1)
-                NEXT_COMMAND_REUSABLE
-                DISPLAY_COUNTDOWN(PLAYER0, TIMER5, 860, 1)
-                NEXT_COMMAND_REUSABLE
-                SET_FLAG(Game.CTA_FLAGS, 1)
-            ENDIF
-            NEXT_COMMAND_REUSABLE
-            MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 1, 1)
-            NEXT_COMMAND_REUSABLE
-            MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 1, 1)
-            IF(PLAYER0, TIMER5 > 860)
-            NEXT_COMMAND_REUSABLE
-            USE_POWER_AT_POS(PLAYER0,91,37,POWER_CAVE_IN,1,1)
-                NEXT_COMMAND_REUSABLE
-                SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 500)
-                NEXT_COMMAND_REUSABLE
-                SET_PLAYER_MODIFIER(PLAYER0, Strength, 500)
-                NEXT_COMMAND_REUSABLE
-                SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 500)
-                NEXT_COMMAND_REUSABLE
-                SET_PLAYER_MODIFIER(PLAYER1, Strength, 500)
-            ENDIF
-            NEXT_COMMAND_REUSABLE
-            SET_GAME_RULE(BodyRemainsFor, 2000)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(TUNNELLER, BaseSpeed, 96)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(BILE_DEMON, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(BUG, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(DARK_MISTRESS, BaseSpeed, 64)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(DEMONSPAWN, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(DRAGON, BaseSpeed, 32)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(DRUID, BaseSpeed, 32)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(FLY, BaseSpeed, 128)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(GHOST, BaseSpeed, 64)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(HELL_HOUND, BaseSpeed, 96)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(HORNY, BaseSpeed, 96)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(ORC, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(SKELETON, BaseSpeed, 64)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(SORCEROR, BaseSpeed, 32)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(SPIDER, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(TENTACLE, BaseSpeed, 32)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(TIME_MAGE, BaseSpeed, 32)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(TROLL, BaseSpeed, 48)
-            NEXT_COMMAND_REUSABLE
-            SET_CREATURE_CONFIGURATION(VAMPIRE, BaseSpeed, 56)
-            NEXT_COMMAND_REUSABLE
-            MAGIC_AVAILABLE(PLAYER0, POWER_HAND, 0, 0)
-        ENDIF
 
 
-        REM Evaluation phase
-        REM Process heart damage
-        If(Game.PREPARNG_PHASE == 0)
-            IF(PLAYER0, TOTAL_CREATURES == 0)
-                if(PLAYER1, TOTAL_CREATURES > 0) then
-                    damageHeart(PLAYER0)
-                end
 
-                ADD_TO_FLAG(Game.WINFLAG_FOR_COMPUTER, 1)
-                SET_FLAG(Game.END_PASE, 1)
-                CREATE_EFFECTS_LINE(COMBAT, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
-                CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER0)
-                COMPUTE_FLAG(PLAYER3, FLAG6, SET, PLAYER1, HORNY, 0)
-            ENDIF
-            IF(PLAYER1, TOTAL_CREATURES == 0)
-                if(PLAYER0, TOTAL_CREATURES > 0)
-                    damageHeart(PLAYER1)
 
-                processPlayerReward(PLAYER0.TOTAL_CREATURES)
-
-                ADD_TO_FLAG(Game.WINFLAG_FOR_PLAYER, 1)
-                SET_FLAG(Game.END_PASE, 1)
-                ADD_HEART_HEALTH(PLAYER1, -1500)
-                CREATE_EFFECTS_LINE(COMBAT, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
-                CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER1)
-            ENDIF
-        ENDIF
 
 
 
@@ -572,44 +438,3 @@ IF(PLAYER0, DUNGEON_DESTROYED == 0)
     ENDIF
 ENDIF
 REM GAME END
-IF(Game.MaxCreatures == 10)
-    HIDE_VARIABLE
-    IF(Game.WINFLAG_FOR_COMPUTER > Game.WINFLAG_FOR_PLAYER)
-        SET_HEART_HEALTH(PLAYER0, 0)
-        CREATE_EFFECTS_LINE(PLAYER1, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
-        LOSE_GAME
-        NEXT_COMMAND_REUSABLE
-        KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
-        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
-        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
-    ENDIF
-    IF(Game.WINFLAG_FOR_COMPUTER < Game.WINFLAG_FOR_PLAYER)
-        SET_HEART_HEALTH(PLAYER1, 0)
-        CREATE_EFFECTS_LINE(PLAYER0, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
-        WIN_GAME
-        NEXT_COMMAND_REUSABLE
-        KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
-        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
-        SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
-    ENDIF
-ENDIF
-IF(PLAYER1, DUNGEON_DESTROYED == 1)
-    CREATE_EFFECTS_LINE(PLAYER0, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
-    HIDE_VARIABLE
-    WIN_GAME
-    NEXT_COMMAND_REUSABLE
-    KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
-    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
-    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
-ENDIF
-IF(PLAYER0, HEART_HEALTH < 100)
-    CREATE_EFFECTS_LINE(PLAYER1, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
-    HIDE_VARIABLE
-    LOSE_GAME
-    NEXT_COMMAND_REUSABLE
-    KILL_CREATURE(ALL_PLAYERS, ANY_CREATURE, ANYWHERE, 10)
-    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, MaximumSize, 1)
-    SET_OBJECT_CONFIGURATION(SPECBOX_CUSTOM, Genre, Furniture)
-ENDIF
-
-RUN_AFTER_VICTORY(1)
