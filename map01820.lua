@@ -45,7 +45,7 @@ function select_units_in_columns()
                 ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
                 
                 local level = math.random(cr.levelRange[1], cr.levelRange[2])
-                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, cr.spawnCreatureAp, 1, level, 0)
+                ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
 
                 break
             end
@@ -54,14 +54,7 @@ function select_units_in_columns()
 end
 
 function initialise()
-    Game.FIGHT_PHASE_ENDED = 1
-    Game.PREPARNG_PHASE = 1
-    Game.CREATURE_RANDOM = 1
-    Game.Round = 1
-    Game.PREPARING_COUNTDOWN  = 1
-    Game.PLAYER_COLLUM_CREATURE_RANDOM  = 4
-    Game.BOX_AND_FREE = 1
-    Game.DESTROY_BOXES_TIMER = 0
+    
     --REST RESET-BOX TIMER
 
     for _, cr in ipairs(Creatures) do
@@ -206,8 +199,10 @@ function processPlayerReward(creatures_remaining)
 
 end 
 
-function prepPhase()
+function start_prep_phase()
     
+    select_units_in_columns()
+
     --SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)
     --SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)
     --SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)
@@ -255,16 +250,11 @@ local function spawn_imp()
 end
 
 local function start_level()
-    REVEAL_MAP_RECT(PLAYER0, 133, 121, 70, 70)
-    
-    --SET_FLAG(PLAYER0, BOX19_ACTIVATED, 1)
-    -- Display count of placeable Creatures
-    --DISPLAY_VARIABLE(Game.PLAYER_COUNTER_CREATURE, Game.MaxCreatures, 0)
 
-    --IF(Game.PREPARNG_PHASE == 0)
-    --    NEXT_COMMAND_REUSABLE
-    --    HIDE_VARIABLE
-    --ENDIF
+    Game.Round = 1
+    
+    REVEAL_MAP_RECT(PLAYER0, 133, 121, 70, 70)
+    start_prep_phase()
 end
 
 function special_activated (eventData,triggerData)
