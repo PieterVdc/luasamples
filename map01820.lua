@@ -25,37 +25,18 @@ local Creatures = {
 
 local ROWS_COUNT = 3
 
-local columns = {
-    {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, type = nil, creature = nil},
-    {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44, boxAp = 33, type = nil, creature = nil},
-    {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45, boxAp = 34, type = nil, creature = nil},
-    {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46, boxAp = 35, type = nil, creature = nil},
-    {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47, boxAp = 36, type = nil, creature = nil},
-    {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48, boxAp = 37, type = nil, creature = nil},
-}
-
-
-function select_units_in_columns()
-    for index, col in ipairs(columns) do
-        rownNo = math.random(ROWS_COUNT)
-        for _, cr in ipairs(Creatures) do
-            if cr.column == index and cr.Row == rownNo then
-                col.type = cr
-                ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
-                
-                local level = math.random(cr.levelRange[1], cr.levelRange[2])
-                print(cr.Creature_type)
-                col.creature = ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
-
-                break
-            end
-        end
-    end
-end
-
 function initialise()
     
-    --REST RESET-BOX TIMER
+    Game.columns = {
+        {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, type = nil, creature = nil},
+        {changeOwnerAp = 78,spawnCreatureAp = 38, displayCostAp = 44, boxAp = 33, type = nil, creature = nil},
+        {changeOwnerAp = 77,spawnCreatureAp = 39, displayCostAp = 45, boxAp = 34, type = nil, creature = nil},
+        {changeOwnerAp = 76,spawnCreatureAp = 40, displayCostAp = 46, boxAp = 35, type = nil, creature = nil},
+        {changeOwnerAp = 75,spawnCreatureAp = 41, displayCostAp = 47, boxAp = 36, type = nil, creature = nil},
+        {changeOwnerAp = 74,spawnCreatureAp = 42, displayCostAp = 48, boxAp = 37, type = nil, creature = nil},
+    }
+
+    Game.BattlefieldCreatures = {}
 
     for _, cr in ipairs(Creatures) do
         SET_BOX_TOOLTIP(cr.SpecialBoxId, cr.BoxToolTip)    
@@ -148,6 +129,24 @@ function initialise()
 end
 
 
+function select_units_in_columns()
+    for index, col in ipairs(Game.columns) do
+        rownNo = math.random(ROWS_COUNT)
+        for _, cr in ipairs(Creatures) do
+            if cr.column == index and cr.Row == rownNo then
+                col.type = cr
+                ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
+                
+                local level = math.random(cr.levelRange[1], cr.levelRange[2])
+                print(cr.Creature_type)
+                col.creature = ADD_CREATURE_TO_LEVEL(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
+
+                break
+            end
+        end
+    end
+end
+
 function damageHeart_effect(player)
     local location
     local effect
@@ -183,7 +182,7 @@ function damageHeart()
         if PLAYER0.TOTAL_CREATURES > 0 then
             damageHeart_effect(PLAYER1)
         end
-        processPlayerReward(PLAYER0.TOTAL_CREATURES)
+        processPlayerReward()
 
         ADD_TO_FLAG(Game.WINFLAG_FOR_PLAYER, 1)
         SET_FLAG(Game.END_PASE, 1)
@@ -194,44 +193,21 @@ function damageHeart()
     
 end
 
-function processPlayerReward(creatures_remaining)
-    -- REWARD for PLAYER
-    if (Game.SURVIVING_CREATURE_PLAYER_REWARD > 0) then
-        ADD_GOLD_TO_PLAYER(PLAYER0, 100)
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 1) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 59, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 2) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 60, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 3) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 68, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 4) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 69, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 5) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 70, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 6) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 71, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 7) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 72, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 8) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 73, 100)
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD == 9) then
-            CREATE_EFFECT("EFFECTELEMENT_PRICE", 50, 100)
-            Game.SURVIVING_CREATURE_PLAYER_REWARD = 0
-        end
-        if (Game.SURVIVING_CREATURE_PLAYER_REWARD > 0) then
-            Game.SURVIVING_CREATURE_PLAYER_REWARD = Game.SURVIVING_CREATURE_PLAYER_REWARD -1
+---creates price effect on the remaining creatures to indicate gold recieved for winning
+---and adds said gold
+function processPlayerReward()
+
+    local counter
+    for index, cr in ipairs(Game.BattlefieldCreatures) do
+        if cr.creature ~= nil then
+            counter = counter + 1
+            RegisterTimerEvent(function (eventData,triggerData) 
+                                    CREATE_EFFECT("EFFECTELEMENT_PRICE", triggerData.creature.pos, 100)
+                                    PLAYER0:ADD_GOLD(100)
+                                end,counter,false).triggerData.creature = cr
         end
     end
-
-end 
+end
 
 function start_fight_phase()
 
@@ -352,8 +328,10 @@ function special_activated (eventData,triggerData)
         for _, cr in ipairs(Creatures) do
             if cr.SpecialBoxId == eventData.SpecialBoxId then
                 if PLAYER0.MONEY >= cr.cost then
-                    columns[cr.column].creature.owner = PLAYER0
+                    Game.columns[cr.column].creature.owner = PLAYER0
                     PLAYER0:ADD_GOLD(-cr.cost)
+                    table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
+                    
                     break
 
                 else
@@ -378,7 +356,7 @@ function placeEnemyCreatures()
 end
 
 function drawPrices()
-    for index, col in ipairs(columns) do
+    for index, col in ipairs(Game.columns) do
         if col.creature == nil then
             return
         end
