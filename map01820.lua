@@ -38,7 +38,9 @@ function initialise()
 
     Game.BattlefieldCreatures = {}
     Game.Round = 0
-
+    Game.player0heartEffectCounter = 0
+    Game.player1heartEffectCounter = 0
+    Game.BattleUnitCounter = 0
 
     for _, cr in ipairs(Creatures) do
         SET_BOX_TOOLTIP(cr.SpecialBoxId, cr.BoxToolTip)
@@ -161,7 +163,7 @@ function damageHeart_effect(player)
         Game.player1heartEffectCounter = (Game.player1heartEffectCounter + 1) % 9
         location = Game.player1heartEffectCounter + 50
     end
-    --ADD_HEART_HEALTH(player, -2000)
+    ADD_HEART_HEALTH(player, -2000)
     CREATE_EFFECTS_LINE(location, player, 0, 3, 5, effect)
 
 end
@@ -174,11 +176,8 @@ function damageHeart()
             damageHeart_effect(PLAYER0)
         end
 
-        ADD_TO_FLAG(Game.WINFLAG_FOR_COMPUTER, 1)
-        SET_FLAG(Game.END_PASE, 1)
-        CREATE_EFFECTS_LINE(COMBAT, PLAYER0, 0, 6, 10, EFFECTELEMENT_BLUE_SPARKLES_LARGE)
-        CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER0)
-        COMPUTE_FLAG(PLAYER3, FLAG6, SET, PLAYER1, HORNY, 0)
+        CREATE_EFFECTS_LINE("COMBAT", PLAYER0, 0, 6, 10, "EFFECTELEMENT_BLUE_SPARKLES_LARGE")
+        CREATE_EFFECT("EFFECT_WORD_OF_POWER", PLAYER0,0)
     end
     if PLAYER1.TOTAL_CREATURES == 0 then
         if PLAYER0.TOTAL_CREATURES > 0 then
@@ -186,11 +185,9 @@ function damageHeart()
         end
         processPlayerReward()
 
-        ADD_TO_FLAG(Game.WINFLAG_FOR_PLAYER, 1)
-        SET_FLAG(Game.END_PASE, 1)
         ADD_HEART_HEALTH(PLAYER1, -1500)
-        CREATE_EFFECTS_LINE(COMBAT, PLAYER1, 0, 6, 10, EFFECTELEMENT_RED_SPARKLES_LARGE)
-        CREATE_EFFECT(EFFECT_WORD_OF_POWER, PLAYER1)
+        CREATE_EFFECTS_LINE("COMBAT", PLAYER1, 0, 6, 10, "EFFECTELEMENT_RED_SPARKLES_LARGE")
+        CREATE_EFFECT("EFFECT_WORD_OF_POWER", PLAYER1,0)
     end
     
 end
@@ -199,16 +196,35 @@ end
 ---and adds said gold
 function processPlayerReward()
 
-    local counter
-    for index, cr in ipairs(Game.BattlefieldCreatures) do
-        if cr.creature ~= nil then
-            counter = counter + 1
-            RegisterTimerEvent(function (eventData,triggerData) 
-                                    CREATE_EFFECT("EFFECTELEMENT_PRICE", triggerData.creature.pos, 100)
-                                    PLAYER0:ADD_GOLD(100)
-                                end,counter,false).triggerData.creature = cr
-        end
+    local counter = 0
+
+    local creatures = getThingsOfClass("Creature")
+    
+    for index, cr in ipairs(creatures) do
+        counter = counter + 1
+        --timer so only 1 effect per tick instead of all simultaniosly
+        RegisterTimerEvent(function (eventData,triggerData) 
+                                CREATE_EFFECT("EFFECTELEMENT_PRICE", triggerData.pos, 100)
+                                PLAYER0:ADD_GOLD(100)
+                            end,counter,false).triggerData.pos = cr.pos
     end
+
+
+end
+
+function kill_all_creatures()
+    local creatures = getThingsOfClass("Creature")
+    
+    for index, cr in ipairs(creatures) do
+        cr:KillCreature()
+    end
+end
+
+function end_battle()
+    damageHeart()
+    kill_all_creatures()
+    start_prep_phase()
+    Game.Round = Game.Round + 1
 end
 
 function start_fight_phase()
@@ -248,11 +264,17 @@ function start_fight_phase()
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(\"TROLL\",         \"BaseSpeed\", 48)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(\"VAMPIRE\",       \"BaseSpeed\", 56)")
     MAGIC_AVAILABLE(PLAYER0, "POWER_HAND", false, false)
+
+    RegisterOnConditionEvent("end_battle",function ()
+                                return PLAYER0.TOTAL_CREATURES == 0 or PLAYER1.TOTAL_CREATURES == 0
+                            end)
 end
 
 function start_prep_phase()
-    
+    Game.BattleUnitCounter = 0
+    placeEnemyCreature()
     select_units_in_columns()
+    CHANGE_SLAB_TYPE(40, 40, "LIBRARY_WALL", "MATCH")
 
     RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)")
     RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)")
@@ -304,6 +326,19 @@ local function start_level()
     start_prep_phase()
 end
 
+function unit_placed_in_battlefield()
+    print('unit_placed_in_battlefield')
+
+    Game.BattleUnitCounter = Game.BattleUnitCounter + 1
+
+    if Game.BattleUnitCounter == Game.Round then
+        start_fight_phase()
+    else
+        placeEnemyCreature()
+        select_units_in_columns()
+    end
+end
+
 local function clear_special_boxes_and_non_selected_units()
     local objects = getThingsOfClass("Object")
     for index, ob in ipairs(objects) do
@@ -321,13 +356,6 @@ local function clear_special_boxes_and_non_selected_units()
     end
 end
 
-function unit_placed_in_battlefield()
-    print('unit_placed_in_battlefield')
-    if #Game.BattlefieldCreatures == Game.Round then
-        start_fight_phase()
-    end
-end
-
 local function unit_select_special(cr)
 
     if PLAYER0.MONEY >= cr.cost then
@@ -336,7 +364,7 @@ local function unit_select_special(cr)
         table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
         clear_special_boxes_and_non_selected_units()
         RegisterOnConditionEvent("unit_placed_in_battlefield",function ()
-                                                            return COUNT_CREATURES_AT_ACTION_POINT(63,PLAYER0,"ANY_CREATURE") == Game.Round
+                                                            return COUNT_CREATURES_AT_ACTION_POINT(63,PLAYER0,"ANY_CREATURE") == Game.BattleUnitCounter + 1
                                                         end)
     end
 end
@@ -360,14 +388,12 @@ function special_activated (eventData,triggerData)
     end
 end
 
-function placeEnemyCreatures()
-    for i = 1, Game.Round, 1 do
-        if PLAYER.TOTAL_CREATURES < Game.Round then
-            local ap = math.random(10, 32)
-            local cr = Creatures[ math.random( #Creatures ) ]
-            local level = math.random(cr.levelRange[1], cr.levelRange[2])
-            ADD_CREATURE_TO_LEVEL(PLAYER1, cr.Creature_type, ap, 1, level, 0)
-        end
+function placeEnemyCreature()
+    if PLAYER1.TOTAL_CREATURES < Game.Round then
+        local ap = math.random(10, 32)
+        local cr = Creatures[ math.random( #Creatures ) ]
+        local level = math.random(cr.levelRange[1], cr.levelRange[2])
+        table.insert(Game.BattlefieldCreatures,ADD_CREATURE_TO_LEVEL(PLAYER1, cr.Creature_type, ap, 1, level, 0))
     end
 end
 
