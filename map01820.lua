@@ -37,6 +37,8 @@ function initialise()
     }
 
     Game.BattlefieldCreatures = {}
+    Game.Round = 0
+
 
     for _, cr in ipairs(Creatures) do
         SET_BOX_TOOLTIP(cr.SpecialBoxId, cr.BoxToolTip)
@@ -81,7 +83,7 @@ function initialise()
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, Celebrate, 564)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, Scream, 570)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, DropDead, 572)")
-    RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, DeadSplat, 946)")")
+    RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, DeadSplat, 946)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, QuerySymbol, 154)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, HandSymbol, 222)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(TUNNELLER, Foot, 9, 4)")
@@ -212,27 +214,19 @@ end
 function start_fight_phase()
 
     ---- Fight phase
-    --if Game.FIGHT_PHASE_ENDED == 0 then
-    --    CHANGE_SLAB_TYPE(40, 40, BRIDGE_FRAME, MATCH)
-    --    if Game.CTA_FLAGS == 0
-    --        USE_POWER_AT_LOCATION(PLAYER0, 63, POWER_CALL_TO_ARMS, 3, 1)
-    --        USE_POWER_AT_LOCATION(PLAYER1, 63, POWER_CALL_TO_ARMS, 3, 1)
-    --        DISPLAY_COUNTDOWN(PLAYER0, TIMER5, 860, 1)
-    --        SET_FLAG(Game.CTA_FLAGS, 1)
-    --    end
-    --    MAGIC_AVAILABLE(PLAYER0, POWER_CALL_TO_ARMS, 1, 1)
-    --    MAGIC_AVAILABLE(PLAYER1, POWER_CALL_TO_ARMS, 1, 1)
-    --    if PLAYER0, TIMER5 > 860)
-    --    USE_POWER_AT_POS(PLAYER0,91,37,POWER_CAVE_IN,1,1)
-    --        SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 500)
-    --        SET_PLAYER_MODIFIER(PLAYER0, Strength, 500)
-    --        SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 500)
-    --        SET_PLAYER_MODIFIER(PLAYER1, Strength, 500)
-    --    end
---
-    --end
---")
---")
+    CHANGE_SLAB_TYPE(40, 40, "BRIDGE_FRAME", "MATCH")
+
+    USE_POWER_AT_LOCATION(PLAYER0, 63, "POWER_CALL_TO_ARMS", 3, true)
+    USE_POWER_AT_LOCATION(PLAYER1, 63, "POWER_CALL_TO_ARMS", 3, true)
+
+    MAGIC_AVAILABLE(PLAYER0, "POWER_CALL_TO_ARMS", true, true)
+    MAGIC_AVAILABLE(PLAYER1, "POWER_CALL_TO_ARMS", true, true)
+    USE_POWER_AT_POS(PLAYER0,91,37,"POWER_CAVE_IN", 1, true)
+    --SET_PLAYER_MODIFIER(PLAYER0, "SpellDamage", 500)
+    --SET_PLAYER_MODIFIER(PLAYER0, "Strength", 500)
+    --SET_PLAYER_MODIFIER(PLAYER1, "SpellDamage", 500)
+    --SET_PLAYER_MODIFIER(PLAYER1, "Strength", 500)
+
     RunDKScriptCommand("SET_GAME_RULE(\"BodyRemainsFor\", 2000)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(\"TUNNELLER\",     \"BaseSpeed\", 96)")
     RunDKScriptCommand("SET_CREATURE_CONFIGURATION(\"BILE_DEMON\",    \"BaseSpeed\", 48)")
@@ -310,6 +304,43 @@ local function start_level()
     start_prep_phase()
 end
 
+local function clear_special_boxes_and_non_selected_units()
+    local objects = getThingsOfClass("Object")
+    for index, ob in ipairs(objects) do
+        if ob.model == "SPECBOX_CUSTOM" then
+            ob:DeleteThing()
+        end
+    end
+
+    local creatures = getThingsOfClass("Creature")
+    
+    for index, cr in ipairs(creatures) do
+        if cr.owner == PLAYER_GOOD then
+            cr:KillCreature()
+        end
+    end
+end
+
+function unit_placed_in_battlefield()
+    print('unit_placed_in_battlefield')
+    if #Game.BattlefieldCreatures == Game.Round then
+        start_fight_phase()
+    end
+end
+
+local function unit_select_special(cr)
+
+    if PLAYER0.MONEY >= cr.cost then
+        Game.columns[cr.column].creature.owner = PLAYER0
+        PLAYER0:ADD_GOLD(-cr.cost)
+        table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
+        clear_special_boxes_and_non_selected_units()
+        RegisterOnConditionEvent("unit_placed_in_battlefield",function ()
+                                                            return COUNT_CREATURES_AT_ACTION_POINT(63,PLAYER0,"ANY_CREATURE") == Game.Round
+                                                        end)
+    end
+end
+
 function special_activated (eventData,triggerData)
 
     if eventData.SpecialBoxId == 18 then --START GAME
@@ -323,24 +354,13 @@ function special_activated (eventData,triggerData)
     else
         for _, cr in ipairs(Creatures) do
             if cr.SpecialBoxId == eventData.SpecialBoxId then
-                if PLAYER0.MONEY >= cr.cost then
-                    Game.columns[cr.column].creature.owner = PLAYER0
-                    PLAYER0:ADD_GOLD(-cr.cost)
-                    table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
-                    
-                    break
-
-                else
-                    --not enough money, ignore box
-                    break
-                end
+                unit_select_special(cr)
             end
         end
     end
 end
 
 function placeEnemyCreatures()
---TODO ask Shinthoras the logic behind this
     for i = 1, Game.Round, 1 do
         if PLAYER.TOTAL_CREATURES < Game.Round then
             local ap = math.random(10, 32)
