@@ -1,6 +1,6 @@
 ; KeeperFX Level Overview File (LOF)
 MAP_FORMAT_VERSION = 1.05
-NAME_TEXT = Lua Chess
+NAME_TEXT = Plants Vs Heroes
 NAME_ID = 
 KIND = FREE
 ENSIGN_POS = 
@@ -11,5 +11,5 @@ SPEECH =
 LAND_VIEW = 
 AUTHOR = qqluqq
 DESCRIPTION = 
-DATE = 2025-3-7
-MAPSIZE = 14 24
+DATE = 2025-3-1
+MAPSIZE = 30 20

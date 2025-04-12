@@ -1,5 +1,5 @@
-local sf = require "levels.luasamples.sunfish"
 
+local sf = require "levels.luasamples.sunfish"
 
 local function sunFpos_to_stl(pos_x,pos_y)
     if Game.turn == true then
@@ -43,7 +43,7 @@ end
 
 
 
-local function get_creature_sfId(creature)
+function get_creature_sfId(creature)
     
     for i,_ in pairs(Game.ThingSfpos) do
 
@@ -134,7 +134,7 @@ local function movePiece(move)
         else 
             model = "WITCH" 
         end 
-        queen = ADD_CREATURE_TO_LEVEL(cr_i.owner,model,sfId_to_pos(move[2]),1,10,0)
+        queen = ADD_CREATURE_TO_LEVEL(cr_i.owner,model,sfId_to_pos(move[2]),1,10)
         queen:MakeThingZombie()
         set_creature_at_sfId(j,queen)
         queen:CreatureWalkTo(end_stl_x, end_stl_y)
@@ -151,8 +151,8 @@ local function movePiece(move)
 
 end
 
-function cpu_turn()
-    local move, score = sf.search(Game.sfpos)
+function Cpu_turn()
+    local move, score = search(Game.sfpos)
 
      -- print(move, score)
      assert(score)
@@ -170,14 +170,14 @@ function cpu_turn()
      assert(move)
      local piece = movePiece(move)
     
-     QUICK_MESSAGE(("My move:" .. sf.render(119 - move[0 + sf.__1]) .. sf.render(119 - move[1 + sf.__1])),piece)
+     QUICK_MESSAGE(("My move:" .. render(119 - move[1]) .. render(119 - move[2])),piece)
 
      Game.turn = true
      MAGIC_AVAILABLE(PLAYER0,"POWER_SLAP",true,true)
 
 end
 
-function special_activated(eventData,triggerData)
+function Special_activated(eventData,triggerData)
 
 
     ---@type Thing
@@ -202,7 +202,7 @@ function special_activated(eventData,triggerData)
 
     Game.turn = false
 
-    RegisterTimerEvent("cpu_turn",40,false)    
+    RegisterTimerEvent(Cpu_turn,40,false)
 
 end
 
@@ -227,7 +227,7 @@ function OnGameStart()
 
     end
 
-    RegisterSpecialActivatedEvent("special_activated")
+    RegisterSpecialActivatedEvent(Special_activated)
     RegisterPowerCastEvent("unitSlapped","POWER_SLAP")
 
     Game.sfpos = sf.Position.new(sf.initial, 0, { true, true }, { true, true }, 0, 0)
