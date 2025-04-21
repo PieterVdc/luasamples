@@ -163,7 +163,7 @@ function damageHeart_effect(player)
         Game.player1heartEffectCounter = (Game.player1heartEffectCounter + 1) % 9
         location = Game.player1heartEffectCounter + 50
     end
-    Add_heart_health(player, -2000)
+    Add_heart_health(player, -2000,false)
     Create_effects_line(location, player, 0, 3, 5, effect)
 
 end
@@ -185,7 +185,7 @@ function damageHeart()
         end
         processPlayerReward()
 
-        Add_heart_health(PLAYER1, -1500)
+        Add_heart_health(PLAYER1, -1500,false)
         Create_effects_line("COMBAT", PLAYER1, 0, 6, 10, "EFFECTELEMENT_RED_SPARKLES_LARGE")
         Create_effect("EFFECT_WORD_OF_POWER", PLAYER1,0)
     end

@@ -146,18 +146,18 @@ function Setup()
 
     --      Player    Room type  Can be available  Is available
 
-    Room_available(    "ALL_PLAYERS",  "TREASURE",    true,      true)
-    Room_available(    "ALL_PLAYERS",  "LAIR",      true,      true)
-    Room_available(    "ALL_PLAYERS",  "GARDEN",    true,      true)
-    Room_available(    "ALL_PLAYERS",  "TRAINING",    true,      true)
-    Room_available(    "ALL_PLAYERS",  "Research",    true,      true)
+    Room_available(    "ALL_PLAYERS",  "TREASURE",    0,      true)
+    Room_available(    "ALL_PLAYERS",  "LAIR",        0,      true)
+    Room_available(    "ALL_PLAYERS",  "GARDEN",      0,      true)
+    Room_available(    "ALL_PLAYERS",  "TRAINING",    0,      true)
+    Room_available(    "ALL_PLAYERS",  "RESEARCH",    0,      true)
 
-    Room_available(    "ALL_PLAYERS",  "GUARD_POST",  true,      false)
-    Room_available(    "ALL_PLAYERS",  "WORKSHOP",    true,      false)
-    Room_available(    "ALL_PLAYERS",  "BARRACKS",    true,      false)
-    Room_available(    "ALL_PLAYERS",  "PRISON",    true,      false)
-    Room_available(    "ALL_PLAYERS",  "TORTURE",    true,      false)
-    Room_available(    "ALL_PLAYERS",  "TEMPLE",    true,      false)
+    Room_available(    "ALL_PLAYERS",  "GUARD_POST",  1,      false)
+    Room_available(    "ALL_PLAYERS",  "WORKSHOP",    1,      false)
+    Room_available(    "ALL_PLAYERS",  "BARRACKS",    1,      false)
+    Room_available(    "ALL_PLAYERS",  "PRISON",      1,      false)
+    Room_available(    "ALL_PLAYERS",  "TORTURE",     1,      false)
+    Room_available(    "ALL_PLAYERS",  "TEMPLE",      1,      false)
 
 
     -- ***** Set the doors available to each  *****

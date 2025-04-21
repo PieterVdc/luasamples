@@ -31,7 +31,7 @@ local function initLevel()
 	Room_available(PLAYER0,"LAIR",1,true)
 	Room_available(PLAYER0,"GARDEN",1,true)
 	Room_available(PLAYER0,"TRAINING",1,false)
-	Room_available(PLAYER0,"Research",1,false)
+	Room_available(PLAYER0,"RESEARCH",1,false)
 	Room_available(PLAYER0,"BRIDGE",1,false)
 	Room_available(PLAYER0,"WORKSHOP",1,false)
 	Room_available(PLAYER0,"PRISON",1,false)
@@ -113,7 +113,6 @@ end
 -- This function runs as soon as the level begins
 function OnGameStart()
     initLevel()
-	
 	-- spawn small tunneller party after 3000 turns. only once
 	RegisterTimerEvent(diggerSpawn,3000,false)
 	
@@ -123,6 +122,6 @@ function OnGameStart()
 		
 	-- win when wave 10 has spawned and no more heroes are on the map
 	RegisterOnConditionEvent(function() Win_game(PLAYER0) end,
-							 function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 10) end)
+							 function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 0) end)
 
 end

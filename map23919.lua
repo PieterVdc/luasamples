@@ -101,8 +101,8 @@ function Setup()
     Set_creature_instance("MONK", 6, "RANGED_HEAL", 2)
 
     -- Make the final Knight more powerful.
-    RunDKScriptCommand("Set_creature_configuration(KNIGHT, Health, 2000)")
-    RunDKScriptCommand("Set_creature_configuration(KNIGHT, Strength, 150)")
+    Run_DKScript_command("Set_creature_configuration(KNIGHT, Health, 2000)")
+    Run_DKScript_command("Set_creature_configuration(KNIGHT, Strength, 150)")
 
     -- Imps gain experience over time and return knocked out allied creatures.
     Set_game_rule("ImpWorkExperience", 512)

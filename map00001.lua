@@ -138,10 +138,6 @@ local function movePiece(move)
         queen:Make_thing_zombie()
         set_creature_at_sfId(j,queen)
         queen:Creature_walk_to(end_stl_x, end_stl_y)
-        local trigger = CreateTrigger("PowerCast",unitSlapped)
-            TriggerRegisterThingEvent(trigger, queen, "powerCast")
-            --TriggerAddCondition(trigger,function () return GetTriggeringSpellKind() == "POWER_SLAP" end)
-            TriggerAddAction(trigger, "unitSlapped")
         cr_i:Kill_creature()
         return queen
     end
