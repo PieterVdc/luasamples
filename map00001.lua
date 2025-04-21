@@ -1,5 +1,5 @@
 
-local sf = require "levels.luasamples.sunfish"
+local sf = require "sunfish"
 
 local function sunFpos_to_stl(pos_x,pos_y)
     if Game.turn == true then
@@ -90,12 +90,12 @@ function placeSpecialBoxes(creature)
 
     for _, move in pairs(moves) do
         if move[1] == sfId then
-            ADD_OBJECT_TO_LEVEL("SPECBOX_CUSTOM",sfId_to_pos(move[2]),0)
+            Add_object_to_level("SPECBOX_CUSTOM",sfId_to_pos(move[2]),0)
             num_moves = num_moves +1
         end
     end
     if num_moves > 0 then
-        MAGIC_AVAILABLE(creature.owner,"POWER_SLAP",false,false)
+        Magic_available(creature.owner,"POWER_SLAP",false,false)
     end
 end
 
@@ -117,10 +117,10 @@ local function movePiece(move)
 
     if cr_j ~= nil then
         print("kill" .. tostring(cr_j))
-        cr_j:KillCreature()
+        cr_j:Kill_creature()
     end
 
-    cr_i:CreatureWalkTo(end_stl_x, end_stl_y)
+    cr_i:Creature_walk_to(end_stl_x, end_stl_y)
 
     set_creature_at_sfId(j,cr_i)
     set_creature_at_sfId(i,nil)
@@ -134,15 +134,15 @@ local function movePiece(move)
         else 
             model = "WITCH" 
         end 
-        queen = ADD_CREATURE_TO_LEVEL(cr_i.owner,model,sfId_to_pos(move[2]),1,10)
-        queen:MakeThingZombie()
+        queen = Add_creature_to_level(cr_i.owner,model,sfId_to_pos(move[2]),1,10)
+        queen:Make_thing_zombie()
         set_creature_at_sfId(j,queen)
-        queen:CreatureWalkTo(end_stl_x, end_stl_y)
-        local trigger = CreateTrigger("queen")
+        queen:Creature_walk_to(end_stl_x, end_stl_y)
+        local trigger = CreateTrigger("PowerCast",unitSlapped)
             TriggerRegisterThingEvent(trigger, queen, "powerCast")
             --TriggerAddCondition(trigger,function () return GetTriggeringSpellKind() == "POWER_SLAP" end)
             TriggerAddAction(trigger, "unitSlapped")
-        cr_i:KillCreature()
+        cr_i:Kill_creature()
         return queen
     end
 
@@ -158,22 +158,22 @@ function Cpu_turn()
      assert(score)
      if score <= -sf.MATE_VALUE then
         print("win")
-         WIN_GAME(PLAYER0)
+         Win_game(PLAYER0)
          return
      end
      if score >= sf.MATE_VALUE then
         print("lose")
-         LOSE_GAME(PLAYER0)
+         Lose_game(PLAYER0)
          return
      end
     
      assert(move)
      local piece = movePiece(move)
     
-     QUICK_MESSAGE(("My move:" .. render(119 - move[1]) .. render(119 - move[2])),piece)
+     Quick_message(("My move:" .. render(119 - move[1]) .. render(119 - move[2])),piece)
 
      Game.turn = true
-     MAGIC_AVAILABLE(PLAYER0,"POWER_SLAP",true,true)
+     Magic_available(PLAYER0,"POWER_SLAP",true,true)
 
 end
 
@@ -183,12 +183,12 @@ function Special_activated(eventData,triggerData)
     ---@type Thing
     local box = eventData.Thing
 
-    local objects = getThingsOfClass("Object")
+    local objects = Get_things_of_class("Object")
     for i,_ in pairs(objects) do
 
         if objects[i].model == "SPECBOX_CUSTOM" then
             if objects[i] ~= box then
-                objects[i]:DeleteThing()
+                objects[i]:Delete_thing()
             end
             
         end
@@ -211,8 +211,11 @@ function OnGameStart()
     Game.turn = true
     Game.ThingSfpos = {}
 
+    --just can't be a creature he owns, as tunnelers would otherwise spam log
+    Set_digger(PLAYER_GOOD, "IMP")
+
     ---@type Creature[]
-    local creatures = getThingsOfClass("Creature")
+    local creatures = Get_things_of_class("Creature")
 
     for i,_ in pairs(creatures) do
 
@@ -221,14 +224,14 @@ function OnGameStart()
         if(cr.owner == PLAYER_GOOD) then
             cr.orientation = 1024
         end
-        cr:MakeThingZombie()
+        cr:Make_thing_zombie()
 
         Game.ThingSfpos[pos_to_sfId(cr.pos)] = cr
 
     end
 
     RegisterSpecialActivatedEvent(Special_activated)
-    RegisterPowerCastEvent("unitSlapped","POWER_SLAP")
+    RegisterPowerCastEvent(unitSlapped,"POWER_SLAP")
 
     Game.sfpos = sf.Position.new(sf.initial, 0, { true, true }, { true, true }, 0, 0)
 end

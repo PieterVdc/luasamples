@@ -1,35 +1,35 @@
 
 
 local function initLevel()
-    SET_GENERATE_SPEED(400)
+    Set_generate_speed(400)
 
-    START_MONEY(PLAYER0,2500)
+    Start_money(PLAYER0,2500)
 
-    MAX_CREATURES(PLAYER0,7)
+    Max_creatures(PLAYER0,7)
 
-    ADD_CREATURE_TO_POOL("FLY",3)
-    ADD_CREATURE_TO_POOL("BUG",12)
+    Add_creature_to_pool("FLY",3)
+    Add_creature_to_pool("BUG",12)
 
-    CREATURE_AVAILABLE(PLAYER0,"FLY",true,false)
+    Creature_available(PLAYER0,"FLY",true,false)
 
-    ROOM_AVAILABLE(PLAYER0,"TREASURE",true,true)
-    ROOM_AVAILABLE(PLAYER0,"LAIR",true,false)
-    ROOM_AVAILABLE(PLAYER0,"GARDEN",true,false)
+    Room_available(PLAYER0,"TREASURE",true,true)
+    Room_available(PLAYER0,"LAIR",true,false)
+    Room_available(PLAYER0,"GARDEN",true,false)
 
-    MAGIC_AVAILABLE(PLAYER0,"POWER_SLAP",true,true)
-    MAGIC_AVAILABLE(PLAYER0,"POWER_HAND",true,true)
-    MAGIC_AVAILABLE(PLAYER0,"POWER_IMP",true,false)
+    Magic_available(PLAYER0,"POWER_SLAP",true,true)
+    Magic_available(PLAYER0,"POWER_HAND",true,true)
+    Magic_available(PLAYER0,"POWER_IMP",true,false)
 
-    SET_CREATURE_MAX_LEVEL(PLAYER_GOOD,"KNIGHT",1)
-    SET_CREATURE_MAX_LEVEL(PLAYER_GOOD,"THIEF",1)
+    Set_creature_max_level(PLAYER_GOOD,"KNIGHT",1)
+    Set_creature_max_level(PLAYER_GOOD,"THIEF",1)
 
     local i = PLAYER0.CONTROLS.ARCHER
 
-    CREATE_PARTY("LANDLORD")
-        ADD_TO_PARTY("LANDLORD","KNIGHT",1,1000,"ATTACK_ENEMIES",0)
+    Create_party("LANDLORD")
+        Add_to_party("LANDLORD","KNIGHT",1,1000,"ATTACK_ENEMIES",0)
 
-    CREATE_PARTY("THIEVES")
-        ADD_TO_PARTY("THIEVES","THIEF",1,100,"ATTACK_ENEMIES",0)
+    Create_party("THIEVES")
+        Add_to_party("THIEVES","THIEF",1,100,"ATTACK_ENEMIES",0)
 end
 
 
@@ -43,11 +43,11 @@ local function LairAvailCondition()
 end
 
 local function dispInfo3()
-    DISPLAY_INFORMATION(3)
+    Display_information(3)
 end
 
 local function treasure9()
-    DISPLAY_INFORMATION(4,PLAYER0)
+    Display_information(4,PLAYER0)
     local trigger = CreateTrigger()
         TriggerRegisterTimerEvent(trigger, 1, true)
         TriggerAddCondition(trigger,Condition(dispInfo3Condition))
@@ -55,9 +55,9 @@ local function treasure9()
 end
 
 local function noMoreDiggers()
-	DISPLAY_INFORMATION(21)
-	MAGIC_AVAILABLE(PLAYER0,"POWER_IMP",true,true)
-	TUTORIAL_FLASH_BUTTON(21,-1)
+	Display_information(21)
+	Magic_available(PLAYER0,"POWER_IMP",true,true)
+	Tutorial_flash_button(21,-1)
 end
 
 
@@ -84,7 +84,7 @@ function Setup()
     local triggerLairAvail = CreateTrigger()
         TriggerRegisterTimerEvent(triggerLairAvail, 1, true)
         TriggerAddCondition(triggerLairAvail,function () return (PLAYER0.TREASURE >= 1) and (PLAYER0.GAME_TURN > 175)  end)
-        TriggerAddAction(triggerLairAvail, function () ROOM_AVAILABLE(PLAYER0,"LAIR",true,true)  end)
+        TriggerAddAction(triggerLairAvail, function () Room_available(PLAYER0,"LAIR",true,true)  end)
 
 end
 
