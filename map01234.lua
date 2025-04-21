@@ -122,6 +122,6 @@ function OnGameStart()
 		
 	-- win when wave 10 has spawned and no more heroes are on the map
 	RegisterOnConditionEvent(function() Win_game(PLAYER0) end,
-							 function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 0) end)
+							 function() return (PLAYER_GOOD.TOTAL_CREATURES <= 0) and (Game.wavenumber >= 10) end)
 
 end
