@@ -1,0 +1,15 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Magmadam
+NAME_ID = 
+KIND = FREE
+ENSIGN_POS = 
+ENSIGN_ZOOM = 
+PLAYERS = 
+OPTIONS = 
+SPEECH = 
+LAND_VIEW = 
+AUTHOR = Trotim
+DESCRIPTION = Lua sample showing slab manipulation functions.
+DATE = 2025-4-23
+MAPSIZE = 41 41
