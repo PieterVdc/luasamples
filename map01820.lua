@@ -374,10 +374,10 @@ function special_activated (eventData,triggerData)
     if eventData.SpecialBoxId == 18 then --START GAME
         start_level()
     elseif eventData.SpecialBoxId == 19 then --"RESET ROUND, no money refund!"
-        Add_object_to_level_AT_POS("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
+        Add_object_to_level_at_pos("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
         reset_round()
     elseif eventData.SpecialBoxId == 20 then --"FREE IMP"
-        Add_object_to_level_AT_POS("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
+        Add_object_to_level_at_pos("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
         spawn_imp()
     else
         for _, cr in ipairs(Creatures) do
