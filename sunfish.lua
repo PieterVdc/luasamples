@@ -20,19 +20,6 @@ local MATE_VALUE = 30000
 -- Our board is represented as a 120 character string. The padding allows for
 -- fast detection of moves that don't stay within the board.
 local A1, H1, A8, H8 = 91, 98, 21, 28
-local initial2 =
-'         \n' .. --   0 -  9
-    '         \n' .. --  10 - 19
-    ' ....k...\n' .. --  20 - 29
-    ' P.......\n' .. --  30 - 39
-    ' ........\n' .. --  40 - 49
-    ' ........\n' .. --  50 - 59
-    ' ........\n' .. --  60 - 69
-    ' ........\n' .. --  70 - 79
-    ' p..PPPPP\n' .. --  80 - 89
-    ' ...QKBNR\n' .. --  90 - 99
-    '         \n' .. -- 100 -109
-    '          ' -- 110 -119
 
 local initial =
 '         \n' .. --   0 -  9
@@ -161,18 +148,19 @@ local function islower(s)
     return s:lower() == s
 end
 
--- super inefficient
 local function swapcase(s)
-    local s2 = ''
+    local t = {}
     for i = 1, #s do
-        local c = s:sub(i, i)
-        if islower(c) then
-            s2 = s2 .. c:upper()
+        local c = s:sub(i,i)
+        if c >= 'a' and c <= 'z' then
+            t[i] = string.upper(c)
+        elseif c >= 'A' and c <= 'Z' then
+            t[i] = string.lower(c)
         else
-            s2 = s2 .. c:lower()
+            t[i] = c
         end
     end
-    return s2
+    return table.concat(t)
 end
 
 Position = {}
@@ -199,49 +187,49 @@ end
 
 function Position:genMoves()
     local moves = {}
-    -- For each of our pieces, iterate through each possible 'ray' of moves,
-    -- as defined in the 'directions' map. The rays are broken e.g. by
-    -- captures or immediately in case of pieces such as knights.
-    for i = 1 - 1, #self.board - 1 do
-        local p = self.board:sub(i + 1, i + 1)
-        if isupper(p) and directions[p] then
-            for _, d in ipairs(directions[p]) do
-                local limit = (i + d) + (10000) * d -- fake limit
-                for j = i + d, limit, d do
-                    local q = self.board:sub(j + 1, j + 1)
-                    -- Stay inside the board
-                    if isspace(self.board:sub(j + 1, j + 1)) then break; end
-                    -- Castling
-                    if i == A1 and q == 'K' and self.wc[0 + 1] then
-                        table.insert(moves, { j, j - 2 })
+    local board = { self.board:byte(1, #self.board) }
+    local mcount = 0
+
+    for i = 0, #board - 1 do
+        local p = board[i + 1]
+        if p >= 65 and p <= 90 then  -- isupper(p)
+            local piece = string.char(p)
+            local dirs = directions[piece]
+            if dirs then
+                for _, d in ipairs(dirs) do
+                    local limit = i + d + 10000 * d
+                    for j = i + d, limit, d do
+                        local q = board[j + 1]
+                        if q == 32 or q == 10 then break end -- isspace
+
+                        -- Castling
+                        if i == A1 and q == 75 and self.wc[1] then
+                            mcount = mcount + 1
+                            moves[mcount] = { j, j - 2 }
+                        elseif i == H1 and q == 75 and self.wc[2] then
+                            mcount = mcount + 1
+                            moves[mcount] = { j, j + 2 }
+                        end
+
+                        if q >= 65 and q <= 90 then break end -- isupper
+
+                        if piece == 'P' then
+                            if (d == N + W or d == N + E) and q == 46 and j ~= self.ep and j ~= self.kp then break end
+                            if (d == N or d == 2 * N) and q ~= 46 then break end
+                            if d == 2 * N and (i < A1 + N or board[i + N + 1] ~= 46) then break end
+                        end
+
+                        mcount = mcount + 1
+                        moves[mcount] = { i, j }
+
+                        if piece == 'P' or piece == 'N' or piece == 'K' then break end
+                        if q >= 97 and q <= 122 then break end -- islower
                     end
-                    if i == H1 and q == 'K' and self.wc[1 + 1] then
-                        table.insert(moves, { j, j + 2 })
-                    end
-                    -- print(p, q, i, d, j)
-                    -- No friendly captures
-                    if isupper(q) then break; end
-                    -- Special pawn stuff
-                    if p == 'P' and (d == N + W or d == N + E) and q == '.' and j ~= self.ep and j ~= self.kp then
-                        break;
-                    end
-                    if p == 'P' and (d == N or d == 2 * N) and q ~= '.' then
-                        break;
-                    end
-                    if p == 'P' and d == 2 * N and (i < A1 + N or self.board:sub(i + N + 1, i + N + 1) ~= '.') then
-                        break;
-                    end
-                    -- Move it
-                    table.insert(moves, { i, j })
-                    -- print(i, j)
-                    -- Stop crawlers from sliding
-                    if p == 'P' or p == 'N' or p == 'K' then break; end
-                    -- No sliding after captures
-                    if islower(q) then break; end
                 end
             end
         end
     end
+
     return moves
 end
 
@@ -252,48 +240,47 @@ function Position:rotate()
 end
 
 function Position:move(move)
-    assert(move) -- move is zero-indexed
-    local i, j = move[0 + 1], move[1 + 1]
-    local p, q = self.board:sub(i + 1, i + 1), self.board:sub(j + 1, j + 1)
-    local function put(board, i, p)
-        return board:sub(1, i - 1) .. p .. board:sub(i + 1)
+    local i, j = move[1], move[2]
+    local board = { self.board:byte(1, #self.board) }
+    local wc, bc, ep, kp = self.wc, self.bc, 0, 0
+    local p, q = board[i + 1], board[j + 1]
+    local score = self.score + self:value(move)
+
+    local function put(tbl, idx, char)
+        tbl[idx] = string.byte(char)
     end
 
-    -- Copy variables and reset ep and kp
-    local board = self.board
-    local wc, bc, ep, kp = self.wc, self.bc, 0, 0
-    local score = self.score + self:value(move)
-    -- Actual move
-    board = put(board, j + 1, board:sub(i + 1, i + 1))
-    board = put(board, i + 1, '.')
-    -- Castling rights
-    if i == A1 then wc = { false, wc[0 + 1] }; end
-    if i == H1 then wc = { wc[0 + 1], false }; end
-    if j == A8 then bc = { bc[0 + 1], false }; end
-    if j == H8 then bc = { false, bc[1 + 1] }; end
-    -- Castling
-    if p == 'K' then
+    put(board, j + 1, string.char(p))
+    put(board, i + 1, '.')
+
+    if i == A1 then wc = { false, wc[2] } end
+    if i == H1 then wc = { wc[1], false } end
+    if j == A8 then bc = { bc[1], false } end
+    if j == H8 then bc = { false, bc[2] } end
+
+    if p == 75 then  -- 'K'
         wc = { false, false }
         if math.abs(j - i) == 2 then
             kp = math.floor((i + j) / 2)
-            board = put(board, j < i and A1 + 1 or H1 + 1, '.')
-            board = put(board, kp + 1, 'R')
+            put(board, (j < i and A1 or H1) + 1, '.')
+            put(board, kp + 1, 'R')
         end
     end
-    -- Special pawn stuff
-    if p == 'P' then
+
+    if p == 80 then -- 'P'
         if A8 <= j and j <= H8 then
-            board = put(board, j + 1, 'Q')
+            put(board, j + 1, 'Q')
         end
         if j - i == 2 * N then
             ep = i + N
         end
-        if ((j - i) == N + W or (j - i) == N + E) and q == '.' then
-            board = put(board, j + S + 1, '.')
+        if ((j - i) == N + W or (j - i) == N + E) and q == 46 then
+            put(board, j + S + 1, '.')
         end
     end
-    -- We rotate the returned position, so it's ready for the next player
-    return self.new(board, score, wc, bc, ep, kp):rotate()
+
+    local new_board = string.char(table.unpack(board))
+    return self.new(new_board, score, wc, bc, ep, kp):rotate()
 end
 
 function Position:value(move)
