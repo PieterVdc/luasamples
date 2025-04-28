@@ -379,7 +379,7 @@ function Spawn_final_wave()
     Game.lord = party[1]
 
     RegisterTimerEvent(Spawn_lord_peasants, 200, false)
-    RegisterUnitDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
+    RegisterCreatureDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
 end
 
 

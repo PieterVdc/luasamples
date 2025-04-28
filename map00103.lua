@@ -69,7 +69,7 @@ function My_setup()
     RegisterTimerEvent(Send_wave_one, 9000, false)
     RegisterTimerEvent(Send_wave_final, 11000, false)
 
-    RegisterUnitDeathEvent(Drop_random_loot)
+    RegisterCreatureDeathEvent(Drop_random_loot)
 end
 
 
@@ -166,5 +166,5 @@ function Send_wave_final()
 
     Game.lord = party[1]
 
-    RegisterUnitDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
+    RegisterCreatureDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
 end
