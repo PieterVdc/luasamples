@@ -55,6 +55,7 @@ end
 function Create_heart_trigger()
     -- Simple trigger to end the game and spawn pretty effects when the White Dungeon Heart is destroyed.
     RegisterOnConditionEvent(Heart_destroyed, function() return PLAYER_GOOD.DUNGEON_DESTROYED >= 1 end)
+    -- RegisterDungeonDestroyedEvent(Heart_destroyed, PLAYER_GOOD)
 end
 
 
@@ -180,7 +181,7 @@ function Lava_spread(fromSlabPosition)
                 Reveal_map_rect(PLAYER0, Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 5, 5)
                 
                 -- Another ipairs loop, this time going over all creatures on the map.
-                -- If the creature is within 5 subtiles of our flowing lava, and belong to White, kill them.
+                -- If the creature is within 5 subtiles of our flowing lava, and belongs to White, kill them.
                 local creatures = Get_things_of_class("Creature")
     
                 for index, creature in ipairs(creatures) do

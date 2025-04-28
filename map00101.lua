@@ -193,7 +193,6 @@ function Found_hero_heart()
     -- We make this one a Game variable so it gets saved for later use.
     -- knightParty can be local since we only needed it to grab our Knight creature. We don't need to do anything else to the party later.
     -- If there was more than 1 creature in the party, they'd be saved as knightParty[2], knightParty[3], etc.
-
     Game.finalKnight = knightParty[1]
     Game.finalKnight.name = "Lord von Lua"
 
@@ -201,12 +200,9 @@ function Found_hero_heart()
     Use_spell_on_creature(Game.finalKnight,"SPELL_FLIGHT",0)
     Use_spell_on_creature(Game.finalKnight,"SPELL_ARMOUR",0)
 
-    print("Knight name: " .. Game.finalKnight.name)
-
     -- And create a new trigger.
     -- Its event will happen when there are no more Knights and run our custom function Killed_final_knight.
-    -- FIXME RegisterUnitDeathEvent doesn't trigger
-    Game.finalKnight:OnDeath(Killed_final_knight)
+    RegisterUnitDeathEvent(Killed_final_knight, Game.finalKnight)
 end
 
 
@@ -215,7 +211,7 @@ function Killed_final_knight()
 
     -- Destroy the White Dungeon Heart to save some time.
     -- Internally called SOUL_CONTAINER, hearts have 30000 HP by default.
-    Add_heart_health(PLAYER_GOOD, -30000, false)
+    Add_heart_health("PLAYER_GOOD", -30000, false)
 end
 
 

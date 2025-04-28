@@ -72,7 +72,7 @@ function Setup()
     Magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
     Magic_available("ALL_PLAYERS", "POWER_CONCEAL", true, false)
     Magic_available("ALL_PLAYERS", "POWER_HOLD_AUDIENCE", true, false)
-    Magic_available("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, false)
+    Magic_available("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, true)
     Magic_available("PLAYER1", "POWER_LIGHTNING", true, false)
     Magic_available("ALL_PLAYERS", "POWER_PROTECT", true, false)
     Magic_available("ALL_PLAYERS", "POWER_CHICKEN", true, false)
@@ -154,24 +154,24 @@ function CreateTriggers()
 --
 --    -- Set up a list of hero parties to spawn at specified times.
 --    -- First, connect the hero gates to the player dungeons and open up the map.
-    RegisterTimerEvent(Add_tunneller_party_to_level, 6000, false,{PLAYER_GOOD, "Scouts", -4, "DUNGEON_HEART", 1, 1, 250})
-
-
-    RegisterTimerEvent(Add_tunneller_party_to_level, 6000, false, {PLAYER_GOOD, "Scouts", -4, "DUNGEON_HEART", 1, 1, 250})
-
-
-    RegisterTimerEvent(Add_tunneller_party_to_level, 7000, false,{PLAYER_GOOD, "Scouts", -3, "DUNGEON_HEART", 0, 1, 250})
-    RegisterTimerEvent(Add_party_to_level, 8000, false,{PLAYER_GOOD, "Brutes", -4})
-    RegisterTimerEvent(Add_party_to_level, 9000, false,{PLAYER_GOOD, "Brutes", -3})
-    RegisterTimerEvent(Add_tunneller_party_to_level, 10000, false,{PLAYER_GOOD, "Scouts", -1, "DUNGEON", 0, 3, 250})
-    RegisterTimerEvent(Add_party_to_level, 11000, false,{PLAYER_GOOD, "Brutes", -1})
-    RegisterTimerEvent(Add_party_to_level, 12000, false,{PLAYER_GOOD, "DND", -4})
-
-    -- Open up the White Dungeon at 15 minutes into the game.
-    -- This lets the player access the Prison.
-    RegisterTimerEvent(Add_tunneller_party_to_level, 19000, false,{PLAYER_GOOD, "Scouts", -2, "APPROPIATE_DUNGEON", 0, 3, 250})
-
-    -- Start regular waves of heroes that come from random gates.
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -4, "DUNGEON_HEART", 1, 1, 250) end, 6000, false)
+--
+--
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -4, "DUNGEON_HEART", 1, 1, 250) end, 6000, false)
+--
+--
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -3, "DUNGEON_HEART", 0, 1, 250)end , 7000, false)
+    RegisterTimerEvent(function () Add_party_to_level(PLAYER_GOOD, "Brutes", -4) end,8000, false)
+    RegisterTimerEvent(function () Add_party_to_level(PLAYER_GOOD, "Brutes", -3) end,9000, false)
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -1, "DUNGEON", 0, 3, 250) end, 10000, false)
+    RegisterTimerEvent(function () Add_party_to_level(PLAYER_GOOD, "Brutes", -1) end, 11000, false)
+    RegisterTimerEvent(function () Add_party_to_level(PLAYER_GOOD, "DND", -4) end, 12000, false)
+--
+    ---- Open up the White Dungeon at 15 minutes into the game.
+    ---- This lets the player access the Prison.
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -2, "APPROPIATE_DUNGEON", 0, 3, 250) end, 19000, false)
+--
+    ---- Start regular waves of heroes that come from random gates.
     RegisterTimerEvent(StartPeriodicWaves, 20000, false)
 
     -- Spawn defenders when the player reaches the White Dungeon Heart.
@@ -201,4 +201,27 @@ function FoundHeroHeart()
     Quick_information(2, "The heroes' dungeon heart lies exposed. Destroy it!", 1)
     Add_party_to_level(PLAYER_GOOD, "Landlord", 1)
     Add_party_to_level(PLAYER_GOOD, "DND", -2)
+end
+
+
+
+function magic_use_power_teleport_orc_to_heart(player,power_kind,power_level,stl_x,stl_y,thing,is_free)
+
+    if (thing.model ~= "ORC") then
+        -- 0 means power simply doesn't have a valid target, so so simply does nothing
+        return 0
+    end
+
+    --pay for the power, the function will return false if the player doesn't have enough gold
+    if (not Pay_for_power(player, power_kind, power_level, is_free)) then
+
+        -- -1 means it failed, and will make a reject sound
+        return -1
+    end
+
+    --player here is used as a location, so it will teleport the player to the heart
+    thing:Teleport_creature(player, "EFFECT_EXPLOSION_4")
+
+    -- 1 means it was cast successfully
+    return 1
 end
