@@ -9,12 +9,11 @@ local function sunFpos_to_stl(pos_x,pos_y)
     end
 end
 
-
-
 local function sfId_to_stl(sfId)
     local x = (sfId - sf.A1) % 10
     local y = -1 * math.floor((sfId - sf.A1) / 10)
-    return sunFpos_to_stl(x,y)
+    
+    return sunFpos_to_stl(x, y)
 end
 
 local function sfId_to_pos(sfId)
@@ -82,9 +81,6 @@ function placeSpecialBoxes(creature)
 
     local sfId = get_creature_sfId(creature)
 
-    print("sfId" .. sfId)
-
-
 
     local num_moves = 0
 
@@ -105,72 +101,79 @@ function unitSlapped(eventData,triggerData)
     
 end
 
+
 local function movePiece(move)
-    local i, j = move[1], move[2]
+    local i, j
 
-    print(" move[2]" ..  move[2])
+    if move.from then
+        -- It's a FFI struct
+        i, j = move.from, move.to
+    else
+        -- It's a Lua table
+        i, j = move[1], move[2]
+    end
+    
 
-    local end_stl_x,end_stl_y     = sfId_to_stl(j)
+    local end_stl_x, end_stl_y = sfId_to_stl(j)
 
     local cr_i = get_creature_at_sfId(i)
     local cr_j = get_creature_at_sfId(j)
 
     if cr_j ~= nil then
-        print("kill" .. tostring(cr_j))
         cr_j:Kill_creature()
     end
 
     cr_i:Creature_walk_to(end_stl_x, end_stl_y)
 
-    set_creature_at_sfId(j,cr_i)
-    set_creature_at_sfId(i,nil)
+    set_creature_at_sfId(j, cr_i)
+    set_creature_at_sfId(i, nil)
     Game.sfpos = Game.sfpos:move(move)
 
-    --pawn promotion
-    if(move[2]<30 and (cr_i.model == "IMP" or cr_i.model == "TUNNELLER")) then
+    -- pawn promotion
+    if (j < 30 and (cr_i.model == "IMP" or cr_i.model == "TUNNELLER")) then
         local model
-        if(cr_i.model == "IMP") then 
-            model = "DARK_MISTRESS" 
-        else 
-            model = "WITCH" 
-        end 
-        queen = Add_creature_to_level(cr_i.owner,model,sfId_to_pos(move[2]),1,10)
+        if (cr_i.model == "IMP") then
+            model = "DARK_MISTRESS"
+        else
+            model = "WITCH"
+        end
+        local queen = Add_creature_to_level(cr_i.owner, model, sfId_to_pos(j), 1, 10)
         queen:Make_thing_zombie()
-        set_creature_at_sfId(j,queen)
+        set_creature_at_sfId(j, queen)
         queen:Creature_walk_to(end_stl_x, end_stl_y)
         cr_i:Kill_creature()
         return queen
     end
 
     return cr_i
-    
-
 end
 
 function Cpu_turn()
     local move, score = search(Game.sfpos)
 
-     -- print(move, score)
-     assert(score)
-     if score <= -sf.MATE_VALUE then
+    assert(score)
+    if score <= -sf.MATE_VALUE then
         print("win")
-         Win_game(PLAYER0)
-         return
-     end
-     if score >= sf.MATE_VALUE then
+        Win_game(PLAYER0)
+        return
+    end
+    if score >= sf.MATE_VALUE then
         print("lose")
-         Lose_game(PLAYER0)
-         return
-     end
-    
-     assert(move)
-     local piece = movePiece(move)
-    
-     Quick_message(("My move:" .. render(119 - move[1]) .. render(119 - move[2])),piece)
+        Lose_game(PLAYER0)
+        return
+    end
 
-     Game.turn = true
-     Magic_available(PLAYER0,"POWER_SLAP",true,true)
+    if not move then
+        print("No legal moves available!")
+        return
+    end
 
+    local piece = movePiece(move)
+
+    --Quick_message(("My move:" .. render(119 - move.from) .. render(119 - move.to)), piece)
+
+    Game.turn = true
+    Magic_available(PLAYER0, "POWER_SLAP", true, true)
 end
 
 function Special_activated(eventData,triggerData)
@@ -193,8 +196,6 @@ function Special_activated(eventData,triggerData)
     local move = {get_creature_sfId(Game.last_slapped_unit),pos_to_sfId(box.pos)}
 
     movePiece(move)
-
-    print(Game.sfpos.board)
 
     Game.turn = false
 

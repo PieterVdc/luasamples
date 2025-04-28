@@ -1,16 +1,23 @@
 -- this is all the chess specific stuff, see 00001.lua for more DK specific lua functions
--- this code is based on the file found here with minimal changes to get it to work with my code
+-- this code is based on the file found here changed to work with the DK lua engine, and optimized for speed
 -- https://github.com/soumith/sunfish.lua
-
--- sunfish.lua, a human transpiler work of https://github.com/thomasahle/sunfish
--- embarassing and ugly translation done by Soumith Chintala
+-- wich in turn was based on https://github.com/thomasahle/sunfish
 -- Code License: BSD
+
+local ffi = require("ffi")
+
+ffi.cdef[[
+typedef int8_t Board[120];
+typedef struct { int16_t from; int16_t to; } Move;
+typedef Move MoveList[512];  // Big enough for all moves
+]]
+
 
 -- The table size is the maximum number of elements in the transposition table.
 local TABLE_SIZE = 1e6
 
 -- This constant controls how much time we spend on looking for optimal moves.
-local NODES_SEARCHED = 1e4
+local NODES_SEARCHED = 1e2
 
 -- Mate value must be greater than 8*queen + 2*(rook+knight+bishop)
 -- King value is set to twice this value such that if the opponent is
@@ -128,54 +135,14 @@ local pst = {
 -------------------------------------------------------------------------------
 -- Chess logic
 -------------------------------------------------------------------------------
-local function isspace(s)
-    if s == ' ' or s == '\n' then
-        return true
-    else
-        return false
-    end
-end
-
-local special = '. \n'
-
-local function isupper(s)
-    if special:find(s) then return false end
-    return s:upper() == s
-end
-
-local function islower(s)
-    if special:find(s) then return false end
-    return s:lower() == s
-end
-
-local function swapcase(s)
-    local t = {}
-    for i = 1, #s do
-        local c = s:sub(i,i)
-        if c >= 'a' and c <= 'z' then
-            t[i] = string.upper(c)
-        elseif c >= 'A' and c <= 'Z' then
-            t[i] = string.lower(c)
-        else
-            t[i] = c
-        end
-    end
-    return table.concat(t)
-end
-
 Position = {}
 
-function Position.new(board, score, wc, bc, ep, kp)
-    --[[  A state of a chess game
-      board -- a 120 char representation of the board
-      score -- the board evaluation
-      wc -- the castling rights
-      bc -- the opponent castling rights
-      ep - the en passant square
-      kp - the king passant square
-   ]] --
+function Position.new(board_string, score, wc, bc, ep, kp)
     local self = {}
-    self.board = board
+    self.board = ffi.new("Board")
+    for i = 0, #board_string - 1 do
+        self.board[i] = board_string:byte(i + 1)
+    end
     self.score = score
     self.wc = wc
     self.bc = bc
@@ -186,42 +153,39 @@ function Position.new(board, score, wc, bc, ep, kp)
 end
 
 function Position:genMoves()
-    local moves = {}
-    local board = { self.board:byte(1, #self.board) }
-    local mcount = 0
+    local moves = ffi.new("MoveList")
+    local move_count = 0
 
-    for i = 0, #board - 1 do
-        local p = board[i + 1]
-        if p >= 65 and p <= 90 then  -- isupper(p)
+    for i = 0, 119 do
+        local p = self.board[i]
+        if p >= 65 and p <= 90 then  -- isupper
             local piece = string.char(p)
             local dirs = directions[piece]
             if dirs then
                 for _, d in ipairs(dirs) do
                     local limit = i + d + 10000 * d
                     for j = i + d, limit, d do
-                        local q = board[j + 1]
+                        local q = self.board[j]
                         if q == 32 or q == 10 then break end -- isspace
-
                         -- Castling
                         if i == A1 and q == 75 and self.wc[1] then
-                            mcount = mcount + 1
-                            moves[mcount] = { j, j - 2 }
+                            moves[move_count].from = j
+                            moves[move_count].to = j - 2
+                            move_count = move_count + 1
                         elseif i == H1 and q == 75 and self.wc[2] then
-                            mcount = mcount + 1
-                            moves[mcount] = { j, j + 2 }
+                            moves[move_count].from = j
+                            moves[move_count].to = j + 2
+                            move_count = move_count + 1
                         end
-
                         if q >= 65 and q <= 90 then break end -- isupper
-
                         if piece == 'P' then
-                            if (d == N + W or d == N + E) and q == 46 and j ~= self.ep and j ~= self.kp then break end
-                            if (d == N or d == 2 * N) and q ~= 46 then break end
-                            if d == 2 * N and (i < A1 + N or board[i + N + 1] ~= 46) then break end
+                            if (d == N+W or d == N+E) and q == 46 and j ~= self.ep and j ~= self.kp then break end
+                            if (d == N or d == 2*N) and q ~= 46 then break end
+                            if d == 2*N and (i < A1+N or self.board[i+N] ~= 46) then break end
                         end
-
-                        mcount = mcount + 1
-                        moves[mcount] = { i, j }
-
+                        moves[move_count].from = i
+                        moves[move_count].to = j
+                        move_count = move_count + 1
                         if piece == 'P' or piece == 'N' or piece == 'K' then break end
                         if q >= 97 and q <= 122 then break end -- islower
                     end
@@ -230,79 +194,142 @@ function Position:genMoves()
         end
     end
 
-    return moves
+        -- Copy FFI move list to Lua table
+    local moves_lua = {}
+    for idx = 0, move_count - 1 do
+        local m = moves[idx]
+        moves_lua[#moves_lua + 1] = { m.from, m.to }
+    end
+    return moves_lua
+
+    --return moves, move_count
 end
 
 function Position:rotate()
-    return self.new(
-        swapcase(self.board:reverse()), -self.score,
-        self.bc, self.wc, 119 - self.ep, 119 - self.kp)
-end
-
-function Position:move(move)
-    local i, j = move[1], move[2]
-    local board = { self.board:byte(1, #self.board) }
-    local wc, bc, ep, kp = self.wc, self.bc, 0, 0
-    local p, q = board[i + 1], board[j + 1]
-    local score = self.score + self:value(move)
-
-    local function put(tbl, idx, char)
-        tbl[idx] = string.byte(char)
+    local new_board = ffi.new("Board")
+    for i = 0, 119 do
+        local c = self.board[119 - i]
+        -- Swap case manually
+        if c >= 65 and c <= 90 then -- isupper
+            new_board[i] = c + 32 -- tolower
+        elseif c >= 97 and c <= 122 then -- islower
+            new_board[i] = c - 32 -- toupper
+        else
+            new_board[i] = c -- keep space or dot
+        end
     end
 
-    put(board, j + 1, string.char(p))
-    put(board, i + 1, '.')
+    return self.new(
+        ffi.string(new_board, 120), -- convert to string for constructor
+        -self.score,
+        self.bc,
+        self.wc,
+        119 - self.ep,
+        119 - self.kp
+    )
+end
+
+local function makeMove(from, to)
+    local m = ffi.new("Move")
+    m.from = from
+    m.to = to
+    return m
+end
+function Position:move(move)
+
+    local m = nil
+    if move.from then
+        -- It's a FFI struct
+        m = move
+    else
+        -- It's a Lua table
+        m = makeMove(move[1], move[2])
+    end
+
+
+    local i, j = m.from, m.to
+    local new_board = ffi.new("Board")
+    ffi.copy(new_board, self.board, 120)
+
+    local wc, bc, ep, kp = self.wc, self.bc, 0, 0
+    local p, q = new_board[i], new_board[j]
+    local score = self.score + self:value({i,j})
+
+    new_board[j] = p
+    new_board[i] = string.byte('.')
 
     if i == A1 then wc = { false, wc[2] } end
     if i == H1 then wc = { wc[1], false } end
     if j == A8 then bc = { bc[1], false } end
     if j == H8 then bc = { false, bc[2] } end
 
-    if p == 75 then  -- 'K'
+    if p == 75 then -- 'K'
         wc = { false, false }
         if math.abs(j - i) == 2 then
             kp = math.floor((i + j) / 2)
-            put(board, (j < i and A1 or H1) + 1, '.')
-            put(board, kp + 1, 'R')
+            new_board[j < i and A1 or H1] = string.byte('.')
+            new_board[kp] = string.byte('R')
         end
     end
 
     if p == 80 then -- 'P'
         if A8 <= j and j <= H8 then
-            put(board, j + 1, 'Q')
+            new_board[j] = string.byte('Q')
         end
         if j - i == 2 * N then
             ep = i + N
         end
         if ((j - i) == N + W or (j - i) == N + E) and q == 46 then
-            put(board, j + S + 1, '.')
+            new_board[j+S] = string.byte('.')
         end
     end
 
-    local new_board = string.char(table.unpack(board))
-    return self.new(new_board, score, wc, bc, ep, kp):rotate()
+    -- Make a string again for the next position
+    local new_board_str = {}
+    for idx = 0, 119 do
+        new_board_str[#new_board_str+1] = string.char(new_board[idx])
+    end
+    return Position.new(table.concat(new_board_str), score, wc, bc, ep, kp):rotate()
 end
 
 function Position:value(move)
-    local i, j = move[0 + 1], move[1 + 1]
-    local p, q = self.board:sub(i + 1, i + 1), self.board:sub(j + 1, j + 1)
-    -- Actual move
-    local score = pst[p][j + 1] - pst[p][i + 1]
-    -- Capture
-    if islower(q) then
-        score = score + pst[q:upper()][j + 1]
+    assert(move, "Position:value() got nil move")
+
+    local i, j
+    if move.from then
+        -- FFI struct
+        i, j = move.from, move.to
+    else
+        -- Lua table fallback
+        i, j = move[1], move[2]
     end
+
+    assert(i and j, "Position:value() got nil i or j")
+
+    local p, q = self.board[i], self.board[j]
+    assert(p, "p nil at " .. tostring(i))
+    assert(q, "q nil at " .. tostring(j))
+
+    local score = pst[string.char(p)][j + 1] - pst[string.char(p)][i + 1]
+
+    -- Capture
+    if q >= 97 and q <= 122 then -- islower
+        score = score + pst[string.char(q):upper()][j + 1]
+    end
+
     -- Castling check detection
     if math.abs(j - self.kp) < 2 then
         score = score + pst['K'][j + 1]
     end
+
     -- Castling
-    if p == 'K' and math.abs(i - j) == 2 then
+    if p == 75 and math.abs(i - j) == 2 then
         score = score + pst['R'][math.floor((i + j) / 2) + 1]
         score = score - pst['R'][j < i and A1 + 1 or H1 + 1]
     end
+
     -- Special pawn stuff
-    if p == 'P' then
+    if p == 80 then
         if A8 <= j and j <= H8 then
             score = score + pst['Q'][j + 1] - pst['P'][j + 1]
         end
@@ -310,6 +337,7 @@ function Position:value(move)
             score = score + pst['P'][j + S + 1]
         end
     end
+
     return score
 end
 
@@ -324,7 +352,7 @@ local function tp_set(pos, val)
     local b2 = pos.bc[2] and 'true' or 'false'
     local w1 = pos.bc[1] and 'true' or 'false'
     local w2 = pos.bc[2] and 'true' or 'false'
-    local hash = pos.board .. ';' .. pos.score .. ';' .. w1 .. ';' .. w2 .. ';'
+    local hash = ffi.string(pos.board, 120) .. ';' .. pos.score .. ';' .. w1 .. ';' .. w2 .. ';'
         .. b1 .. ';' .. b2 .. ';' .. pos.ep .. ';' .. pos.kp
     tp[hash] = val
     tp_index[#tp_index + 1] = hash
@@ -336,7 +364,7 @@ local function tp_get(pos)
     local b2 = pos.bc[2] and 'true' or 'false'
     local w1 = pos.bc[1] and 'true' or 'false'
     local w2 = pos.bc[2] and 'true' or 'false'
-    local hash = pos.board .. ';' .. pos.score .. ';' .. w1 .. ';' .. w2 .. ';'
+    local hash = ffi.string(pos.board, 120) .. ';' .. pos.score .. ';' .. w1 .. ';' .. w2 .. ';'
         .. b1 .. ';' .. b2 .. ';' .. pos.ep .. ';' .. pos.kp
     return tp[hash]
 end
@@ -485,121 +513,6 @@ function search(pos, maxn)
         return entry.move, score
     end
     return nil, score
-end
-
--------------------------------------------------------------------------------
--- User interface
--------------------------------------------------------------------------------
-
-function parse(c)
-    if not c then return nil end
-    local p, v = c:sub(1, 1), c:sub(2, 2)
-    if not (p and v and tonumber(v)) then return nil end
-
-    local fil, rank = string.byte(p) - string.byte('a'), tonumber(v) - 1
-    return A1 + fil - 10 * rank
-end
-
-function render(i)
-    local rank, fil = math.floor((i - A1) / 10), (i - A1) % 10
-    return string.char(fil + string.byte('a')) .. tostring(-rank + 1)
-end
-
-function ttfind(t, k)
-    assert(t)
-    if not k then return false end
-    for _, v in ipairs(t) do
-        if k[1] == v[1] and k[2] == v[2] then
-            return true
-        end
-    end
-    return false
-end
-
-local strsplit = function(a)
-    local out = {}
-    while true do
-        local pos, _ = a:find('\n')
-        if pos then
-            out[#out + 1] = a:sub(1, pos - 1)
-            a = a:sub(pos + 1)
-        else
-            out[#out + 1] = a
-            break
-        end
-    end
-    return out
-end
-
-local function printboard2(board)
-    local l = strsplit(board, '\n')
-    for k, v in ipairs(l) do
-        for i = 1, #v do
-            print(v:sub(i, i))
-            print('  ')
-        end
-        print('\n')
-    end
-end
-
-local function printboard(board)
-    local l = strsplit(board, '\n')
-    for k, v in ipairs(l) do
-        for i = 1, #v do
-            io.write(v:sub(i, i))
-            io.write('  ')
-        end
-        io.write('\n')
-    end
-end
-
-local function main()
-    local pos = Position.new(initial, 0, { true, true }, { true, true }, 0, 0)
-
-    while true do
-        -- We add some spaces to the board before we print it.
-        -- That makes it more readable and pleasing.
-        printboard(pos.board)
-
-        -- We query the user until she enters a legal move.
-        local move = nil
-        while true do
-            print("Your move: ")
-            local crdn = io.read()
-            move = { parse(crdn:sub(1, 2)), parse(crdn:sub(3, 4)) }
-            if move[1] and move[2] and ttfind(pos:genMoves(), move) then
-                break
-            else
-                -- Inform the user when invalid input (e.g. "help") is entered
-                print("Invalid input. Please enter a move in the proper format (e.g. g8f6)")
-            end
-        end
-        pos = pos:move(move)
-
-        -- After our move we rotate the board and print it again.
-        -- This allows us to see the effect of our move.
-        printboard(pos:rotate().board)
-
-        -- Fire up the engine to look for a move.
-        local move, score = search(pos)
-        -- print(move, score)
-        assert(score)
-        if score <= -MATE_VALUE then
-            print("You won")
-            break
-        end
-        if score >= MATE_VALUE then
-            print("You lost")
-            break
-        end
-
-        assert(move)
-
-        -- The black player moves from a rotated position, so we have to
-        -- 'back rotate' the move before printing it.
-        print("My move:", render(119 - move[0 + 1]) .. render(119 - move[1 + 1]))
-        pos = pos:move(move)
-    end
 end
 
 return {  Position = Position, initial = initial, MATE_VALUE = MATE_VALUE,
