@@ -1,5 +1,15 @@
---AutoChess map by Shinthoras, translated from DKscript to lua by qqluqq
+-- ********************************************
+--
+--              AutoChess map by Shinthoras
+--              translated from DKscript to lua by qqluqq
+--
+-- ********************************************
+-- battler where you can select your creatures and watch them fight against the enemy creatures
+-- the enemy creatures are selected randomly and placed randomly
+-- the player can select his creatures and place them in the battlefield
 
+
+-- these are constants that are used in the script since they don't change they can just be local and don't need to be stored in the Game table
 local Creatures = {
     {Creature_type = "BILE_DEMON",   BoxToolTip = "BILE DEMON",    SpecialBoxId = 0,  Row = 1, column = 1, cost = 250 , levelRange = {2,8} },
     {Creature_type = "BUG",          BoxToolTip = "BUG",           SpecialBoxId = 1,  Row = 1, column = 2, cost = 50  , levelRange = {6,10}},
@@ -25,7 +35,13 @@ local Creatures = {
 
 local ROWS_COUNT = 3
 
-function initialise()
+function OnGameStart()
+    Initialise()
+    RegisterSpecialActivatedEvent("special_activated")
+    RegisterTimerEvent("drawPrices",25,true)
+end
+
+function Initialise()
     
     Game.columns = {
         {changeOwnerAp = 79,spawnCreatureAp = 62, displayCostAp = 43, boxAp = 61, type = nil, creature = nil},
@@ -72,9 +88,9 @@ function initialise()
     Magic_available(PLAYER1, "POWER_HAND", false, false)
     Magic_available(PLAYER1, "POWER_SLAP", false, false)
     Magic_available(PLAYER0, "POWER_POSSESS", false, false)
-    
-    Run_DKScript_command("Set_object_configuration(SPECBOX_CUSTOM, DestroyOnLava, 1)")
-    Run_DKScript_command("Set_object_configuration(CTA_ENSIGN, MaximumSize, 1)")
+ 
+    Set_object_configuration("SPECBOX_CUSTOM", "DestroyOnLava", 1)
+    Set_object_configuration("CTA_ENSIGN", "MaximumSize", 1)
     Run_DKScript_command("Set_creature_configuration(TUNNELLER, Stand, 556)")
     Run_DKScript_command("Set_creature_configuration(TUNNELLER, Ambulate, 554)")
     Run_DKScript_command("Set_creature_configuration(TUNNELLER, Attack, 558)")
@@ -107,25 +123,6 @@ function initialise()
     Run_DKScript_command("Set_creature_configuration(TUNNELLER, Luck, 0)")
     Run_DKScript_command("Set_creature_configuration(TUNNELLER, SlapsToKill, 5)")
     Run_DKScript_command("Set_creature_property(\"TUNNELLER\", \"SPECIAL_DIGGER\", 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(BILE_DEMON, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(BUG, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(DARK_MISTRESS, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(DEMONSPAWN, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(DRAGON, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(DRUID, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(FLY, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(GHOST, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(HELL_HOUND, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(HORNY, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(IMP, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(ORC, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(SKELETON, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(SORCEROR, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(SPIDER, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(TENTACLE, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(TIME_MAGE, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(TROLL, 0)")
-    Run_DKScript_command("SET_CREATURE_FEAR(VAMPIRE, 0)")
 
     
     Set_game_rule("DungeonHeartHealHealth", 0)
@@ -205,7 +202,7 @@ function processPlayerReward()
         --timer so only 1 effect per tick instead of all simultaniosly
         RegisterTimerEvent(function (eventData,triggerData) 
                                 Create_effect("EFFECTELEMENT_PRICE", triggerData.pos, 100)
-                                PLAYER0:Add_gold(100)
+                                PLAYER0:add_gold(100)
                             end,counter,false).triggerData.pos = cr.pos
     end
 
@@ -216,7 +213,7 @@ function kill_all_creatures()
     local creatures = Get_things_of_class("Creature")
     
     for index, cr in ipairs(creatures) do
-        cr:Kill_creature()
+        cr:kill()
     end
 end
 
@@ -343,7 +340,7 @@ local function clear_special_boxes_and_non_selected_units()
     local objects = Get_things_of_class("Object")
     for index, ob in ipairs(objects) do
         if ob.model == "SPECBOX_CUSTOM" then
-            ob:Delete_thing()
+            ob:delete()
         end
     end
 
@@ -351,7 +348,7 @@ local function clear_special_boxes_and_non_selected_units()
     
     for index, cr in ipairs(creatures) do
         if cr.owner == PLAYER_GOOD then
-            cr:Kill_creature()
+            cr:kill()
         end
     end
 end
@@ -360,7 +357,7 @@ local function unit_select_special(cr)
 
     if PLAYER0.MONEY >= cr.cost then
         Game.columns[cr.column].creature.owner = PLAYER0
-        PLAYER0:Add_gold(-cr.cost)
+        PLAYER0:add_gold(-cr.cost)
         table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
         clear_special_boxes_and_non_selected_units()
         RegisterOnConditionEvent("unit_placed_in_battlefield",function ()
@@ -448,8 +445,3 @@ function game_end()
     --end
 end
 
-function OnGameStart()
-    initialise()
-    RegisterSpecialActivatedEvent("special_activated")
-    RegisterTimerEvent("drawPrices",25,true)
-end
