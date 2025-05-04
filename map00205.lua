@@ -125,19 +125,14 @@ Blizzard_durations = {
 
 -- As outlined by Magic_power_UseFunction_template in templates.lua
 function Magic_use_power_blizzard(player, power_kind, power_level, stl_x, stl_y, thing, is_free)
-    print("lua")
-    Play_message(PLAYER0,"SOUND",496)
-    print("dkscipt")
-    --Run_DKScript_command("PLAY_MESSAGE(PLAYER0,SOUND,496)")
-
     if Game.BlizzardPower ~= nil then
-        if player.GAME_TURN < Game.BlizzardStartTick + Blizzard_durations[Game.BlizzardPower+1] then
+        if player.GAME_TURN < Game.BlizzardStartTick + Blizzard_durations[Game.BlizzardPower] then
             return -1
         end
     end
 
     if Pay_for_power(player, power_kind, power_level, is_free) then
-        Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", stl_x, stl_y, 2)
+        Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", stl_x, stl_y, 1024)
 
         Game.BlizzardStartTick = player.GAME_TURN
         Game.BlizzardPlayer = player
@@ -152,33 +147,33 @@ end
 
 
 function Magic_blizzard_update(player, power_level, stl_x, stl_y)
-    if player.GAME_TURN > Game.BlizzardStartTick + Blizzard_durations[power_level+1] then
+    if player.GAME_TURN > Game.BlizzardStartTick + Blizzard_durations[power_level] then
         return
     end
 
     RegisterTimerEvent(function() Magic_blizzard_update(Game.BlizzardPlayer, Game.BlizzardPower, Game.BlizzardStlX, Game.BlizzardStlY) end, 1, false)
 
     if player.GAME_TURN % 7 == 0 then
-        for i = 1, power_level+1, 1 do
-            local effectStlRadiusX = math.random(-Blizzard_distances[power_level+1] + 2, Blizzard_distances[power_level+1] - 2)
-            local effectStlRadiusY = math.random(-Blizzard_distances[power_level+1] + 2, Blizzard_distances[power_level+1] - 2)
+        for i = 1, power_level, 1 do
+            local effectStlRadiusX = math.random(-Blizzard_distances[power_level] + 2, Blizzard_distances[power_level] - 2)
+            local effectStlRadiusY = math.random(-Blizzard_distances[power_level] + 2, Blizzard_distances[power_level] - 2)
             local effectStlX = math.max(1, stl_x + effectStlRadiusX)
             effectStlX = math.min(251, effectStlX)
             local effectStlY = math.max(1, stl_y + effectStlRadiusY)
             effectStlY = math.min(119, effectStlY)
     
-            Create_effect_at_pos("EFFECTELEMENT_ENTRANCE_MIST", effectStlX, effectStlY, 2)
-            Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", effectStlX, effectStlY, 2)
+            Create_effect_at_pos("EFFECTELEMENT_ENTRANCE_MIST", effectStlX, effectStlY, 128)
+            Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", effectStlX, effectStlY, 1024)
         end
 
-        local creatures = Get_things_of_class("Creature")
+        local creatures = Get_creatures()
         
         for index, creature in ipairs(creatures) do
-            if Get_distance(stl_x, stl_y, creature.pos.stl_x, creature.pos.stl_y) <= Blizzard_distances[power_level+1] then
+            if Get_distance(stl_x, stl_y, creature.pos.stl_x, creature.pos.stl_y) <= Blizzard_distances[power_level] then
                 creature.health = math.max(1, creature.health - 1)
     
                 if creature.orientation ~= 1024 then -- In lieu of being able to check already frozen state
-                    Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", creature.pos.stl_x, creature.pos.stl_y, 8)
+                    Create_effect_at_pos("EFFECT_FALLING_ICE_BLOCKS", creature.pos.stl_x, creature.pos.stl_y, 1024)
                     Use_spell_on_creature(creature, "SPELL_FREEZE", 0)
                     creature.orientation = 1024
                 end

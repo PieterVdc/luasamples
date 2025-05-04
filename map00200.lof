@@ -1,0 +1,8 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Single Example
+KIND = FREE
+AUTHOR = PieterVdc
+DESCRIPTION = Translation of Bullfrogs 'Single Example' map that came with the map editor.
+DATE = 2025-4-21
+MAPSIZE = 85 41

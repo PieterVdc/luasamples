@@ -1,0 +1,8 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Custom Keeper Power
+KIND = FREE
+AUTHOR = Trotim
+DESCRIPTION = This map showcases a new Keeper Spell: Blizzard
+DATE = 2025-4-26
+MAPSIZE = 85 41

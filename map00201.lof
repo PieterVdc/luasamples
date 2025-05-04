@@ -1,0 +1,8 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Basics and Triggers
+KIND = FREE
+AUTHOR = Trotim
+DESCRIPTION = Fully commented simple example map using only Lua instead of old DK level script.
+DATE = 2025-4-28
+MAPSIZE = 41 41

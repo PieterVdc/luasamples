@@ -1,0 +1,8 @@
+; KeeperFX Level Overview File (LOF)
+MAP_FORMAT_VERSION = 1.06
+NAME_TEXT = Limited Vision
+KIND = FREE
+AUTHOR = Trotim
+DESCRIPTION = Limit vision and random drops
+DATE = 2025-4-28
+MAPSIZE = 41 41

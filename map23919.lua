@@ -169,7 +169,7 @@ function CreateTriggers()
 --
     ---- Open up the White Dungeon at 15 minutes into the game.
     ---- This lets the player access the Prison.
-    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -2, "APPROPIATE_DUNGEON", 0, 3, 250) end, 19000, false)
+    RegisterTimerEvent(function () Add_tunneller_party_to_level(PLAYER_GOOD, "Scouts", -2, "APPROPRIATE_DUNGEON", 0, 3, 250) end, 19000, false)
 --
     ---- Start regular waves of heroes that come from random gates.
     RegisterTimerEvent(StartPeriodicWaves, 20000, false)
@@ -220,7 +220,7 @@ function magic_use_power_teleport_orc_to_heart(player,power_kind,power_level,stl
     end
 
     --player here is used as a location, so it will teleport the player to the heart
-    thing:Teleport_creature(player, "EFFECT_EXPLOSION_4")
+    thing:teleport(player, "EFFECT_EXPLOSION_4")
 
     -- 1 means it was cast successfully
     return 1

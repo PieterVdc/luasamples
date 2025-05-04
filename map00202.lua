@@ -1,11 +1,11 @@
 -- ********************************************
 --
---                  Lua Sample Rogueville
---                  by Trotim April 2025
+--        Lua Map Randomization
+--        by Trotim April 2025
 --
 -- ********************************************
 -- This map showcases some randomization of terrain and what's available to the player.
--- Lua lets us do more than old level script DRAW_FROM and RANDOMIZE_FLAG could, and is easier to set up.
+-- Lua lets us do more than old level script DRAWFROM and RANDOMIZE_FLAG could, and is easier to set up.
 
 
 function OnGameStart()
@@ -344,7 +344,7 @@ function Do_hero_room_spawning()
 
         -- Make sure our hero spawned correctly before trying to do more things to them.
         if hero ~= nil then
-            Create_effect("EFFECT_BALL_PUFF_WHITE", {hero.pos.stl_x, hero.pos.stl_y}, 2)
+            Create_effect("EFFECT_BALL_PUFF_WHITE", hero.pos, 2)
             Use_spell_on_creature(hero, "SPELL_ARMOUR", 1)
         end
     else
@@ -386,7 +386,7 @@ end
 -- Periodically make the Knight heal and spawn a Thief as a little showcase of creature specific scripting.
 function Spawn_lord_peasants()
     if Game.lord:isValid() then
-        Create_effect("EFFECT_BALL_PUFF_WHITE", Game.lord.pos, 2)
+        Create_effect("EFFECT_BALL_PUFF_WHITE", Game.lord.pos, 512)
         Use_spell_on_creature(Game.lord, "SPELL_HEAL", 1)
         local thiefLevel = math.max(1, math.floor(Game.lord.level / 2))
         Add_creature_to_level(PLAYER_GOOD, "THIEF", Game.lord.pos, thiefLevel, 0)

@@ -1,8 +1,10 @@
 -- ********************************************
 --
---                  Lua Sample Rutherbeck
+--           Lua Basics and Triggers
+--           by Trotim Apr 2025
 --
 -- ********************************************
+-- Fully commented simple example map using only Lua instead of old DK level script.
 
 
 -- OnGameStart() is a built-in function.
@@ -81,8 +83,8 @@ function My_setup()
 	-- Run_DKScript_command can be useful in case a Lua equivalent is not (yet) available.
 	-- We'll spawn a lone Knight as the final fight of the level.
     -- Let's give Knights more health to make the Lord of the Land more fearsome.
-    -- A Knight's normal HP is 950 at level 1. Raising it to 2000 sounds good.
-    Run_DKScript_command("SET_CREATURE_CONFIGURATION(KNIGHT, Health, 2000)")
+    -- A Knight's normal HP is 950 at level 1. Raising it to 1500 sounds good.
+    Run_DKScript_command("SET_CREATURE_CONFIGURATION(KNIGHT, Health, 1500)")
 
 	-- We'll spawn some hero waves. Let's make a custom variable that will keep track of how many we have sent.
     -- By making it part of Game, it will be saved when the player saves the game.
@@ -120,13 +122,11 @@ function My_create_triggers()
     -- This works like IF_ACTION_POINT in old level script.
     RegisterOnActionPointEvent(Found_hero_heart, 1, PLAYER0)
 
-
     -- We can also create a trigger that will fire when a time has been reached.
     -- This will run our own custom function Start_waves when 6000 game ticks (5 minutes) have passed.
     -- Since the last argument is "false", the timer event will only happen once at 6000 ticks and never again.
     -- If it were "true", the timer would loop, happening at 6000, 12000, 18000, etc.
     RegisterTimerEvent(Start_waves, 6000, false)
-
 
     -- Triggers can also have CONDITIONS.
     -- The ACTION will only happen if the CONDITION is true.
@@ -194,19 +194,45 @@ function Found_hero_heart()
     -- knightParty can be local since we only needed it to grab our Knight creature. We don't need to do anything else to the party later.
     -- If there was more than 1 creature in the party, they'd be saved as knightParty[2], knightParty[3], etc.
     Game.finalKnight = knightParty[1]
-    Game.finalKnight.name = "Lord von Lua"
 
     -- We can cast spells on him. Spell names can be found in your KeeperFX folder /fxdata/magic.cfg.
     Use_spell_on_creature(Game.finalKnight,"SPELL_FLIGHT",0)
     Use_spell_on_creature(Game.finalKnight,"SPELL_ARMOUR",0)
 
     -- And create a new trigger.
-    -- Its event will happen when there are no more Knights and run our custom function Killed_final_knight.
-    RegisterUnitDeathEvent(Killed_final_knight, Game.finalKnight)
+    -- Its event will happen when he specifically dies and run our custom function Killed_final_knight.
+    RegisterCreatureDeathEvent(Killed_final_knight, Game.finalKnight)
 end
 
 
+-- When Game.finalKnight dies, let's do something at his location.
+-- Turns out he was a Vampire in disguise all along!
 function Killed_final_knight()
+    -- We can make the zoom eye button of the objective message go to exactly where he died.
+    Quick_objective_with_pos("Lord von Lua was a Vampire all along! Make him pay for his treachery!", Game.finalKnight.pos.stl_x, Game.finalKnight.pos.stl_y)
+
+    -- We can quickly set up a new party and add it to the level where the Knight died.
+    Create_party("Final")
+    Add_to_party("Final", "VAMPIRE", 3, 5000, "ATTACK_DUNGEON_HEART", 1000)
+    local finalParty = Add_party_to_level(PLAYER_GOOD, "Final", Game.finalKnight.pos)
+
+    -- Save the new Vampire to a variable and add a new trigger to fire when the Vampire dies.
+    Game.finalVampire = finalParty[1]
+    RegisterCreatureDeathEvent(Killed_final_vampire, Game.finalVampire)
+
+    -- At this point we will have been fighting him for a while.
+    -- By setting the Vampire's health to 0.5 times his max health, Lord von Lua will appear wounded.
+    Game.finalVampire.health = Game.finalVampire.max_health * 0.5
+
+    -- We want to make it look like the Knight has turned into a Vampire.
+    -- But right now, the Knight would still play his full death animation. We just spawn a Vampire on top.
+    -- We can remove the Knight entirely to stop the animation and leave no corpse.
+    -- Luckily, we still have him saved as a variable!
+    Game.finalKnight:delete_thing()
+end
+
+
+function Killed_final_vampire()
     Quick_objective("Lord von Lua lies before you, bloodied and beaten. Enjoy your victory, Keeper.", PLAYER_GOOD)
 
     -- Destroy the White Dungeon Heart to save some time.

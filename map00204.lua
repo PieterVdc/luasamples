@@ -1,10 +1,11 @@
 -- ********************************************
 --
---              Lua Sample Magmadam
---              by Trotim April 2025
+--             Lua Limited Vision
+--             by Trotim April 2025
 --
 -- ********************************************
--- On this map, the player's vision is constantly reset to simulate a "fog of war" like in other RTS games.
+-- On this map, the player's vision is restricted to only near their heart, their creatures, and their Alarm Traps.
+-- This is achieved by, on every game tick, concealing the whole map, then revealing only chosen slabs.
 
 
 function OnGameStart()
@@ -58,17 +59,20 @@ function My_setup()
 
     Trap_available("ALL_PLAYERS", "ALARM", true, 8)
 
+    -- Make Alarm Traps easier to create in the Workshop.
     Set_trap_configuration("ALARM","ManufactureRequired",9000)
 
     Create_party("STEALER")
     Add_to_party("STEALER", "THIEF", 1, 0, "STEAL_GOLD", 0)
 
     RegisterTimerEvent(Update_vision, 1, true)
-    RegisterTimerEvent(Create_random_thieves, 1200, false)
 
+    RegisterTimerEvent(Create_random_thieves, 1200, false)
     RegisterTimerEvent(Send_wave_one, 9000, false)
     RegisterTimerEvent(Send_wave_final, 11000, false)
 
+    -- Gives killed hero creatures a chance to drop workshop crates
+    -- That way, they get more Alarm Traps (and Lightning traps).
     RegisterCreatureDeathEvent(Drop_random_loot)
 end
 
@@ -76,7 +80,7 @@ end
 function Update_vision()
     Conceal_map_rect(PLAYER0, 61, 61, 122, 122, true)
 
-    local creatures = Get_things_of_class("Creature")
+    local creatures = Get_creatures()
     for index, creature in ipairs(creatures) do
         if creature.owner == PLAYER0 then
             Reveal_map_rect(PLAYER0, creature.pos.stl_x, creature.pos.stl_y, 21, 21)
@@ -117,7 +121,6 @@ end
 
 
 function Drop_random_loot(eventData, triggerData)
-    print(eventData.unit.owner)
     if eventData.unit.owner == PLAYER_GOOD then
         local pos = eventData.unit.pos
 

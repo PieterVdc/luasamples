@@ -4,9 +4,6 @@
 --
 -- ********************************************
 
-
-
-
 ---The OnGameStart function is called when the level is first loaded and an entry point for the script
 ---This function will be called the same in any lua script for a level
 function OnGameStart ()
@@ -206,9 +203,6 @@ function Setup()
     Magic_available(  "ALL_PLAYERS",  "POWER_ARMAGEDDON",      true,      true)
 
 end
-
-
-
 
 -- **********     CREATE AND ADD     **********
 -- **********  CREATURES TO PARTIES  **********

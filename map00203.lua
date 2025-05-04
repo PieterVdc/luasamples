@@ -1,7 +1,7 @@
 -- ********************************************
 --
---              Lua Sample Magmadam
---              by Trotim April 2025
+--              Lua Lava Spreading
+--              by Trotim Apr 2025
 --
 -- ********************************************
 -- On this map, digging certain gold slabs triggers lava to flood the map, turning dirt slabs and wall slabs into lava slabs.
@@ -54,8 +54,8 @@ end
 
 function Create_heart_trigger()
     -- Simple trigger to end the game and spawn pretty effects when the White Dungeon Heart is destroyed.
-    RegisterOnConditionEvent(Heart_destroyed, function() return PLAYER_GOOD.DUNGEON_DESTROYED >= 1 end)
-    -- RegisterDungeonDestroyedEvent(Heart_destroyed, PLAYER_GOOD)
+    -- RegisterOnConditionEvent(Heart_destroyed, function() return PLAYER_GOOD.DUNGEON_DESTROYED >= 1 end)
+    RegisterDungeonDestroyedEvent(Heart_destroyed, PLAYER_GOOD)
 end
 
 
@@ -182,12 +182,12 @@ function Lava_spread(fromSlabPosition)
                 
                 -- Another ipairs loop, this time going over all creatures on the map.
                 -- If the creature is within 5 subtiles of our flowing lava, and belongs to White, kill them.
-                local creatures = Get_things_of_class("Creature")
-    
+                local creatures = Get_creatures()
+                
                 for index, creature in ipairs(creatures) do
                     local distance = Get_distance(creature.pos.stl_x, creature.pos.stl_y, Slab_to_subtile(lava_x), Slab_to_subtile(lava_y))
                     if distance <= 5 and creature.owner == PLAYER_GOOD then
-                        creature:Kill_creature()
+                        creature:kill_creature()
                     end
                 end
                 

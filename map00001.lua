@@ -1,5 +1,5 @@
 
-local sf = require "sunfish"
+local sf = require "map00001_sunfish"
 
 local function sunFpos_to_stl(pos_x,pos_y)
     if Game.turn == true then
@@ -141,7 +141,7 @@ local function movePiece(move)
         queen:Make_thing_zombie()
         set_creature_at_sfId(j, queen)
         queen:Creature_walk_to(end_stl_x, end_stl_y)
-        cr_i:Kill_creature()
+        cr_i:kill()
         return queen
     end
 
@@ -187,7 +187,7 @@ function Special_activated(eventData,triggerData)
 
         if objects[i].model == "SPECBOX_CUSTOM" then
             if objects[i] ~= box then
-                objects[i]:Delete_thing()
+                objects[i]:delete()
             end
             
         end
@@ -201,6 +201,48 @@ function Special_activated(eventData,triggerData)
 
     RegisterTimerEvent(Cpu_turn,40,false)
 
+end
+
+local current_search = nil
+
+function Cpu_start_thinking()
+    current_search = {
+        pos = Game.sfpos,
+        nodes_searched = 0,
+        depth = 1,
+        best_move = nil,
+        best_score = nil,
+        finished = false,
+    }
+end
+
+function Cpu_think()
+    if not current_search then return end
+    if current_search.finished then return end
+
+    -- Do a small chunk of search
+    local chunk_nodes = 1000
+    local move, score = incremental_search(current_search, chunk_nodes)
+
+    if move then
+        current_search.best_move = move
+        current_search.best_score = score
+        current_search.finished = true
+    end
+end
+
+function Cpu_execute_move()
+    if not current_search or not current_search.finished then return end
+
+    local move = current_search.best_move
+    local piece = movePiece(move)
+
+    Quick_message(("My move:" .. render(119 - move.from) .. render(119 - move.to)), piece)
+
+    Game.turn = true
+    Magic_available(PLAYER0, "POWER_SLAP", true, true)
+
+    current_search = nil
 end
 
 function OnGameStart()
