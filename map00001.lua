@@ -120,10 +120,10 @@ local function movePiece(move)
     local cr_j = get_creature_at_sfId(j)
 
     if cr_j ~= nil then
-        cr_j:Kill_creature()
+        cr_j:kill()
     end
 
-    cr_i:Creature_walk_to(end_stl_x, end_stl_y)
+    cr_i:creature_walk_to(end_stl_x, end_stl_y)
 
     set_creature_at_sfId(j, cr_i)
     set_creature_at_sfId(i, nil)
@@ -140,7 +140,7 @@ local function movePiece(move)
         local queen = Add_creature_to_level(cr_i.owner, model, sfId_to_pos(j), 1, 10)
         queen:Make_thing_zombie()
         set_creature_at_sfId(j, queen)
-        queen:Creature_walk_to(end_stl_x, end_stl_y)
+        queen:creature_walk_to(end_stl_x, end_stl_y)
         cr_i:kill()
         return queen
     end
@@ -263,7 +263,7 @@ function OnGameStart()
         if(cr.owner == PLAYER_GOOD) then
             cr.orientation = 1024
         end
-        cr:Make_thing_zombie()
+        cr:make_thing_zombie()
 
         Game.ThingSfpos[pos_to_sfId(cr.pos)] = cr
 
