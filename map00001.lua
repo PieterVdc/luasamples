@@ -91,7 +91,7 @@ function placeSpecialBoxes(creature)
         end
     end
     if num_moves > 0 then
-        Magic_available(creature.owner,"POWER_SLAP",false,false)
+        MagicAvailable(creature.owner,"POWER_SLAP",false,false)
     end
 end
 
@@ -154,12 +154,12 @@ function Cpu_turn()
     assert(score)
     if score <= -sf.MATE_VALUE then
         print("win")
-        Win_game(PLAYER0)
+        WinGame(PLAYER0)
         return
     end
     if score >= sf.MATE_VALUE then
         print("lose")
-        Lose_game(PLAYER0)
+        LoseGame(PLAYER0)
         return
     end
 
@@ -173,7 +173,7 @@ function Cpu_turn()
     --Quick_message(("My move:" .. render(119 - move.from) .. render(119 - move.to)), piece)
 
     Game.turn = true
-    Magic_available(PLAYER0, "POWER_SLAP", true, true)
+    MagicAvailable(PLAYER0, "POWER_SLAP", true, true)
 end
 
 function Special_activated(eventData,triggerData)
@@ -182,7 +182,7 @@ function Special_activated(eventData,triggerData)
     ---@type Thing
     local box = eventData.Thing
 
-    local objects = Get_things_of_class("Object")
+    local objects = GetThingsOfClass("Object")
     for i,_ in pairs(objects) do
 
         if objects[i].model == "SPECBOX_CUSTOM" then
@@ -200,6 +200,8 @@ function Special_activated(eventData,triggerData)
     Game.turn = false
 
     RegisterTimerEvent(Cpu_turn,40,false)
+
+    
 
 end
 
@@ -240,7 +242,7 @@ function Cpu_execute_move()
     Quick_message(("My move:" .. render(119 - move.from) .. render(119 - move.to)), piece)
 
     Game.turn = true
-    Magic_available(PLAYER0, "POWER_SLAP", true, true)
+    MagicAvailable(PLAYER0, "POWER_SLAP", true, true)
 
     current_search = nil
 end
@@ -251,10 +253,10 @@ function OnGameStart()
     Game.ThingSfpos = {}
 
     --just can't be a creature he owns, as tunnelers would otherwise spam log
-    Set_digger(PLAYER_GOOD, "IMP")
+    SetDigger(PLAYER_GOOD, "IMP")
 
     ---@type Creature[]
-    local creatures = Get_things_of_class("Creature")
+    local creatures = GetThingsOfClass("Creature")
 
     for i,_ in pairs(creatures) do
 

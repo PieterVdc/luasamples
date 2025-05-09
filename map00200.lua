@@ -16,7 +16,7 @@ function OnGameStart ()
 
     --        Objective Number  Objective Text (must be within quotes)                                          Player
     --   0,      "In the caves of Savactor, an rival Keeper battles with the tireless forces of good. Vanquish the pathetic heroes and them proceed to conquer the rival Keeper to gain dominance over this land.",  PLAYER0)
-    Display_objective(113,  PLAYER0)
+    DisplayObjective(113,  PLAYER0)
 end
 
 function Create_triggers()
@@ -28,11 +28,11 @@ function Create_triggers()
     -- RegisterTimerEvent for example takes a time in game ticks, and a boolean for whether the timer should repeat or just trigger once
     RegisterTimerEvent(Add_ap4_event,20000,false)
     
-    RegisterOnActionPointEvent(function () Add_party_to_level(	PLAYER_GOOD,"PARTY2",1,1) end,2,PLAYER0)
+    RegisterOnActionPointEvent(function () AddPartyToLevel(	PLAYER_GOOD,"PARTY2",1) end,2,PLAYER0)
     --
     RegisterDungeonDestroyedEvent(Good_destroyed,PLAYER_GOOD)
     --if the function is short enough, it can be defined inline when registering the event
-    RegisterDungeonDestroyedEvent(function () Win_game() end,PLAYER1)
+    RegisterDungeonDestroyedEvent(function () WinGame() end,PLAYER1)
 end
 
 --once the timer passes a new events wich evaluates if actionpoint 4 is activated by player 0 will be created
@@ -49,17 +49,17 @@ end
 
 function Spawn_party1()
     --        The player the party is assigned to  Party Name  Action Point or Hero Door  Number of copies of party
-    Add_tunneller_party_to_level(  PLAYER_GOOD,          "PARTY1",    -1,        "DUNGEON_HEART",  0,    3,    400)
+    AddTunnellerPartyToLevel(  PLAYER_GOOD,          "PARTY1",    -1,        "DUNGEON_HEART",  0,    3,    400)
 end
 
 --the logic that is executed when the good dungeon is destroyed, in this case it displays an objective
 function Good_destroyed()
     --"The corpses of the good lie strewn around you. Now go, and conquer your rival on this land. Dominion awaits ...",  PLAYER0)
-    Display_objective(114)
+    DisplayObjective(114)
 
     --        The player the party is assigned to  Party Name  Action Point or Hero Door  Number of copies of party
-    Add_party_to_level(  PLAYER_GOOD, "PARTY3",    1,        1)
-    Add_party_to_level(  PLAYER_GOOD, "PARTY4",    2,        1)
+    AddPartyToLevel(  PLAYER_GOOD, "PARTY3",    1)
+    AddPartyToLevel(  PLAYER_GOOD, "PARTY4",    2)
 end
 
 
@@ -70,14 +70,14 @@ function Setup()
     -- ***** Set the Generation Speed of the  *****
     -- ***** Entrances                        *****
 
-    Set_generate_speed(500)
+    SetGenerateSpeed(500)
 
 
     -- ***** Set the computer players going   *****
 
     --    Player    Player Type
 
-    Computer_player(PLAYER1,  0)
+    ComputerPlayer(PLAYER1,  0)
 
 
     -- ***** Set the maximum number of        *****
@@ -85,8 +85,8 @@ function Setup()
 
     --    Player    Number of creatures
 
-    Max_creatures(  PLAYER0,  30)
-    Max_creatures(  PLAYER1,  30)
+    MaxCreatures(  PLAYER0,  30)
+    MaxCreatures(  PLAYER1,  30)
 
 
     -- ***** Set the amount of gold each      *****
@@ -94,8 +94,8 @@ function Setup()
 
     --    Player    Amount of gold
 
-    Start_money(  PLAYER0,  10000)
-    Start_money(  PLAYER1,  10000)
+    StartMoney(  PLAYER0,  10000)
+    StartMoney(  PLAYER1,  10000)
 
 
 
@@ -107,17 +107,17 @@ function Setup()
 
     --      Creature Name  Number of creatures
 
-    Add_creature_to_pool(  "BUG",    10)
-    Add_creature_to_pool(  "FLY",    10)
-    Add_creature_to_pool(  "SPIDER",    5)
-    Add_creature_to_pool(  "SORCEROR",  30)
-    Add_creature_to_pool(  "DEMONSPAWN",  20)
-    Add_creature_to_pool(  "DRAGON",    20)
-    Add_creature_to_pool(  "TROLL",    10)
-    Add_creature_to_pool(  "ORC",    10)
-    Add_creature_to_pool(  "HELL_HOUND",  10)
-    Add_creature_to_pool(  "DARK_MISTRESS",  10)
-    Add_creature_to_pool(  "BILE_DEMON",  20)
+    AddCreatureToPool(  "BUG",    10)
+    AddCreatureToPool(  "FLY",    10)
+    AddCreatureToPool(  "SPIDER",    5)
+    AddCreatureToPool(  "SORCEROR",  30)
+    AddCreatureToPool(  "DEMONSPAWN",  20)
+    AddCreatureToPool(  "DRAGON",    20)
+    AddCreatureToPool(  "TROLL",    10)
+    AddCreatureToPool(  "ORC",    10)
+    AddCreatureToPool(  "HELL_HOUND",  10)
+    AddCreatureToPool(  "DARK_MISTRESS",  10)
+    AddCreatureToPool(  "BILE_DEMON",  20)
 
 
     -- ***** Enable each player to recieve    *****
@@ -125,17 +125,17 @@ function Setup()
 
     --          Player    Creatures  Can be available  amount forced
 
-    Creature_available(  "ALL_PLAYERS",  "BUG",      true,      0)
-    Creature_available(  "ALL_PLAYERS",  "FLY",      true,      0)
-    Creature_available(  "ALL_PLAYERS",  "SPIDER",    true,      0)
-    Creature_available(  "ALL_PLAYERS",  "SORCEROR",    true,      0)
-    Creature_available(  "ALL_PLAYERS",  "DEMONSPAWN",  true,      0)
-    Creature_available(  "ALL_PLAYERS",  "DRAGON",    true,      0)
-    Creature_available(  "ALL_PLAYERS",  "TROLL",    true,      0)
-    Creature_available(  "ALL_PLAYERS",  "ORC",      true,      0)
-    Creature_available(  "ALL_PLAYERS",  "HELL_HOUND",  true,      0)
-    Creature_available(  "ALL_PLAYERS",  "DARK_MISTRESS",true,      0)
-    Creature_available(  "ALL_PLAYERS",  "BILE_DEMON",  true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "BUG",      true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "FLY",      true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "SPIDER",    true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "SORCEROR",    true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "DEMONSPAWN",  true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "DRAGON",    true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "TROLL",    true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "ORC",      true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "HELL_HOUND",  true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "DARK_MISTRESS",true,      0)
+    CreatureAvailable(  "ALL_PLAYERS",  "BILE_DEMON",  true,      0)
 
 
     -- ***** Set the rooms available to each  *****
@@ -143,18 +143,18 @@ function Setup()
 
     --      Player    Room type  Can be available  Is available
 
-    Room_available(    "ALL_PLAYERS",  "TREASURE",    0,      true)
-    Room_available(    "ALL_PLAYERS",  "LAIR",        0,      true)
-    Room_available(    "ALL_PLAYERS",  "GARDEN",      0,      true)
-    Room_available(    "ALL_PLAYERS",  "TRAINING",    0,      true)
-    Room_available(    "ALL_PLAYERS",  "RESEARCH",    0,      true)
+    RoomAvailable(    "ALL_PLAYERS",  "TREASURE",    0,      true)
+    RoomAvailable(    "ALL_PLAYERS",  "LAIR",        0,      true)
+    RoomAvailable(    "ALL_PLAYERS",  "GARDEN",      0,      true)
+    RoomAvailable(    "ALL_PLAYERS",  "TRAINING",    0,      true)
+    RoomAvailable(    "ALL_PLAYERS",  "RESEARCH",    0,      true)
 
-    Room_available(    "ALL_PLAYERS",  "GUARD_POST",  1,      false)
-    Room_available(    "ALL_PLAYERS",  "WORKSHOP",    1,      false)
-    Room_available(    "ALL_PLAYERS",  "BARRACKS",    1,      false)
-    Room_available(    "ALL_PLAYERS",  "PRISON",      1,      false)
-    Room_available(    "ALL_PLAYERS",  "TORTURE",     1,      false)
-    Room_available(    "ALL_PLAYERS",  "TEMPLE",      1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "GUARD_POST",  1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "WORKSHOP",    1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "BARRACKS",    1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "PRISON",      1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "TORTURE",     1,      false)
+    RoomAvailable(    "ALL_PLAYERS",  "TEMPLE",      1,      false)
 
 
     -- ***** Set the doors available to each  *****
@@ -162,10 +162,10 @@ function Setup()
 
     --      Player    Door type    Can be available  Is available
 
-    Door_available(    "ALL_PLAYERS",  "WOOD",      true,      1)
-    Door_available(    "ALL_PLAYERS",  "BRACED",    true,      1)
-    Door_available(    "ALL_PLAYERS",  "STEEL",    true,      1)
-    Door_available(    "ALL_PLAYERS",  "MAGIC",    true,      1)
+    DoorAvailable(    "ALL_PLAYERS",  "WOOD",      true,      1)
+    DoorAvailable(    "ALL_PLAYERS",  "BRACED",    true,      1)
+    DoorAvailable(    "ALL_PLAYERS",  "STEEL",    true,      1)
+    DoorAvailable(    "ALL_PLAYERS",  "MAGIC",    true,      1)
 
 
     -- ***** Set the traps available to each  *****
@@ -173,12 +173,12 @@ function Setup()
 
     --          Player    Trap type    Can be available  Is available
 
-    Trap_available(    "ALL_PLAYERS",  "BOULDER",      true,      1)
-    Trap_available(    "ALL_PLAYERS",  "ALARM",      true,      1)
-    Trap_available(    "ALL_PLAYERS",  "POISON_GAS",    true,      1)
-    Trap_available(    "ALL_PLAYERS",  "LIGHTNING",    true,      1)
-    Trap_available(    "ALL_PLAYERS",  "WORD_OF_POWER",  true,      1)
-    Trap_available(    "ALL_PLAYERS",  "LAVA",        true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "BOULDER",      true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "ALARM",      true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "POISON_GAS",    true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "LIGHTNING",    true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "WORD_OF_POWER",  true,      1)
+    TrapAvailable(    "ALL_PLAYERS",  "LAVA",        true,      1)
 
 
     -- ***** Set the spells available to each *****
@@ -186,21 +186,21 @@ function Setup()
 
     --            Player    Spell type    Can be available  Is available
 
-    Magic_available(  "ALL_PLAYERS",  "POWER_IMP",        true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_OBEY",        true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_SIGHT",        true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_CALL_TO_ARMS",  true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_CAVE_IN",    true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_HEAL_CREATURE",  true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_HOLD_AUDIENCE",  true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_LIGHTNING",      true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_SPEED",        true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_PROTECT",    true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_CONCEAL",    true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_DISEASE",    true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_CHICKEN",    true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_DESTROY_WALLS",  true,      true)
-    Magic_available(  "ALL_PLAYERS",  "POWER_ARMAGEDDON",      true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_IMP",        true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_OBEY",        true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_SIGHT",        true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_CALL_TO_ARMS",  true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_CAVE_IN",    true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_HEAL_CREATURE",  true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_HOLD_AUDIENCE",  true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_LIGHTNING",      true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_SPEED",        true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_PROTECT",    true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_CONCEAL",    true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_DISEASE",    true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_CHICKEN",    true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_DESTROY_WALLS",  true,      true)
+    MagicAvailable(  "ALL_PLAYERS",  "POWER_ARMAGEDDON",      true,      true)
 
 end
 
@@ -228,36 +228,36 @@ function Create_parties()
   
     --    Party Name
 
-    Create_party(  "PARTY1")
-    Create_party(  "PARTY2")
-    Create_party(  "PARTY3")
+    CreateParty(  "PARTY1")
+    CreateParty(  "PARTY2")
+    CreateParty(  "PARTY3")
 
 
     -- ***** Add creatures to those parties   *****
     --    Party Name  Creature Name  Experience   Amount of Gold  Objective    Countdown
 
-    Add_to_party(  "PARTY1",    "ARCHER",    3,    200,    "ATTACK_DUNGEON_HEART",  0)
-    Add_to_party(  "PARTY1",    "ARCHER",    3,    200,    "ATTACK_DUNGEON_HEART",  0)
-    Add_to_party(  "PARTY1",    "DWARFA",    3,    400,    "ATTACK_DUNGEON_HEART",  0)
-    Add_to_party(  "PARTY1",    "DWARFA",    3,    400,    "ATTACK_DUNGEON_HEART",  0)
-    Add_to_party(  "PARTY1",    "WITCH",    4,    700,    "ATTACK_DUNGEON_HEART",  0)
+    AddToParty(  "PARTY1",    "ARCHER",    3,    200,    "ATTACK_DUNGEON_HEART",  0)
+    AddToParty(  "PARTY1",    "ARCHER",    3,    200,    "ATTACK_DUNGEON_HEART",  0)
+    AddToParty(  "PARTY1",    "DWARFA",    3,    400,    "ATTACK_DUNGEON_HEART",  0)
+    AddToParty(  "PARTY1",    "DWARFA",    3,    400,    "ATTACK_DUNGEON_HEART",  0)
+    AddToParty(  "PARTY1",    "WITCH",    4,    700,    "ATTACK_DUNGEON_HEART",  0)
 
 
-    Add_to_party(  "PARTY2",    "ARCHER",    5,    400,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "ARCHER",    5,    400,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "BARBARIAN",  6,    200,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "MONK",    5,    600,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "MONK",    5,    600,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "SAMURAI",  6,    500,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY2",    "SAMURAI",  6,    500,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "ARCHER",    5,    400,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "ARCHER",    5,    400,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "BARBARIAN",  6,    200,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "MONK",    5,    600,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "MONK",    5,    600,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "SAMURAI",  6,    500,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY2",    "SAMURAI",  6,    500,    "ATTACK_ENEMIES",    0)
 
 
-    Add_to_party(  "PARTY3",    "ARCHER",    7,    600,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY3",    "ARCHER",    7,    600,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY3",    "GIANT",    6,    200,    "DEFEND_PARTY",      0)
-    Add_to_party(  "PARTY3",    "GIANT",    6,    200,    "DEFEND_PARTY",      0)
-    Add_to_party(  "PARTY3",    "WIZARD",    5,    600,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY3",    "WIZARD",    6,    500,    "ATTACK_ENEMIES",    0)
-    Add_to_party(  "PARTY3",    "WIZARD",    6,    500,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY3",    "ARCHER",    7,    600,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY3",    "ARCHER",    7,    600,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY3",    "GIANT",    6,    200,    "DEFEND_PARTY",      0)
+    AddToParty(  "PARTY3",    "GIANT",    6,    200,    "DEFEND_PARTY",      0)
+    AddToParty(  "PARTY3",    "WIZARD",    5,    600,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY3",    "WIZARD",    6,    500,    "ATTACK_ENEMIES",    0)
+    AddToParty(  "PARTY3",    "WIZARD",    6,    500,    "ATTACK_ENEMIES",    0)
 
 end

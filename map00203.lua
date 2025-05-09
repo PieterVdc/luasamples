@@ -10,42 +10,42 @@
 
 
 function OnGameStart()
-	Quick_objective_with_pos("A single seam of gold is holding back this pool of lava. Dig it up, Keeper.", 55, 73)
+	QuickObjectiveWithPos("A single seam of gold is holding back this pool of lava. Dig it up, Keeper.", 55, 73)
 	
     My_setup()
 end
 
 
 function My_setup()
-    Set_generate_speed(200)
+    SetGenerateSpeed(200)
 	
-    Max_creatures(PLAYER0, 15)
+    MaxCreatures(PLAYER0, 15)
 
-    Start_money(PLAYER0, 10000)
+    StartMoney(PLAYER0, 10000)
 
-    Add_creature_to_pool("FLY", 1)
-    Add_creature_to_pool("DEMONSPAWN", 8)
-    Add_creature_to_pool("HELL_HOUND", 8)
+    Game.add_creature_to_pool("FLY", 1)
+    Game.add_creature_to_pool("DEMONSPAWN", 8)
+    Game.add_creature_to_pool("HELL_HOUND", 8)
 
-    Creature_available("ALL_PLAYERS", "FLY", true, 1)
-    Creature_available("ALL_PLAYERS", "DEMONSPAWN", true, 0)
-    Creature_available("ALL_PLAYERS", "HELL_HOUND", true, 1)
+    Game.creature_available("ALL_PLAYERS", "FLY", true, 1)
+    Game.creature_available("ALL_PLAYERS", "DEMONSPAWN", true, 0)
+    Game.creature_available("ALL_PLAYERS", "HELL_HOUND", true, 1)
 
-    Room_available("ALL_PLAYERS", "TREASURE", 2, true)
-    Room_available("ALL_PLAYERS", "LAIR", 2, true)
-    Room_available("ALL_PLAYERS", "GARDEN", 2, true)
-    Room_available("ALL_PLAYERS", "TRAINING", 2, true)
+    Game.room_available("ALL_PLAYERS", "TREASURE", 2, true)
+    Game.room_available("ALL_PLAYERS", "LAIR", 2, true)
+    Game.room_available("ALL_PLAYERS", "GARDEN", 2, true)
+    Game.room_available("ALL_PLAYERS", "TRAINING", 2, true)
 
-    Room_available("ALL_PLAYERS", "BRIDGE", 2, false)
+    Game.room_available("ALL_PLAYERS", "BRIDGE", 2, false)
 
-    Magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SIGHT", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SPEED", true, true)
+    Game.magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
+    Game.magic_available("ALL_PLAYERS", "POWER_SIGHT", true, true)
+    Game.magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
+    Game.magic_available("ALL_PLAYERS", "POWER_SPEED", true, true)
 
     -- This sets the Hell Hound attraction requirement (Scavenger Room) to NULL i.e. none.
     -- They will always come through the Entrance to our dungeon.
-    Run_DKScript_command("SET_CREATURE_CONFIGURATION(HELL_HOUND, EntranceRoom, NULL)")
+    RunDKScriptCommand("SET_CREATURE_CONFIGURATION(HELL_HOUND, EntranceRoom, NULL)")
 
     Create_heart_trigger()
     Create_lava_triggers()
@@ -87,7 +87,7 @@ function Heart_destroyed()
     
     -- Now, let's loop through the heartEffectPositions and create an effect on each.
     for index, value in ipairs(heartEffectPositions) do
-        Create_effect_at_pos("EFFECT_COLOURFUL_FIRE_CIRCLE", value[1], value[2], 2)
+        CreateEffectAtPos("EFFECT_COLOURFUL_FIRE_CIRCLE", value[1], value[2], 2)
     end
     -- As the Lua ipairs function goes down the list, it will run its functions once for each entry.
     -- index will start at 1 and increase by 1 each time.
@@ -96,7 +96,7 @@ function Heart_destroyed()
     -- The second run, value is {95,20}. Third is {97,19}, then {99,20}, and so on.
     -- value[1] will get the first number, our x coordinate, and value[2] the second one, our y coordinate.
 
-    Win_game(PLAYER0)
+    WinGame(PLAYER0)
 end
 
 
@@ -112,9 +112,9 @@ end
 -- i.e. Lava_unleashed checks whether the slab on x 18 and y 24 is not Gold anymore.
 function Create_lava_triggers()
 
-    RegisterOnConditionEvent(Lava_unleashed, function() return (Get_slab(18, 24).kind ~= "GOLD") end)
-    RegisterOnConditionEvent(Lava_unleashed_2, function() return (Get_slab(18, 20).kind ~= "GOLD") end)
-    RegisterOnConditionEvent(Lava_unleashed_3, function() return (Get_slab(31, 35).kind ~= "DENSE_GOLD") end)
+    RegisterOnConditionEvent(Lava_unleashed, function() return (GetSlab(18, 24).kind ~= "GOLD") end)
+    RegisterOnConditionEvent(Lava_unleashed_2, function() return (GetSlab(18, 20).kind ~= "GOLD") end)
+    RegisterOnConditionEvent(Lava_unleashed_3, function() return (GetSlab(31, 35).kind ~= "DENSE_GOLD") end)
 
     -- Other slab variables we could access are slab.owner, slab.revealed, and slab.style (texture).
 end
@@ -138,10 +138,10 @@ end
 
 
 function Give_bridge()
-    Quick_objective_with_pos("Destroy the Heroes' Dungeon Heart for a colorful explosion!", 97, 22)
-    Room_available("ALL_PLAYERS", "BRIDGE", 2, true)
-    Tutorial_flash_button(18, 0)
-    Add_heart_health("PLAYER_GOOD", -29000, false)
+    QuickObjectiveWithPos("Destroy the Heroes' Dungeon Heart for a colorful explosion!", 97, 22)
+    RoomAvailable("ALL_PLAYERS", "BRIDGE", 2, true)
+    TutorialFlashButton(18, 0)
+    AddHeartHealth("PLAYER_GOOD", -29000, false)
 end
 
 
@@ -175,19 +175,19 @@ function Lava_spread(fromSlabPosition)
             -- If we come across a slab we want to turn into lava, we turn it into lava, create some effects,
             -- and reveal the turned slab to the player so they can see what's happening.
             if Lava_can_spread_to_slab_type(lava_x, lava_y) then
-                Change_slab_type(lava_x, lava_y, "LAVA", "NONE")
-                Create_effect_at_pos("EFFECT_EXPLOSION_4", Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 1)
-                Create_effect_at_pos("EFFECT_DIRT_RUBBLE_BIG", Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 5)
-                Reveal_map_rect(PLAYER0, Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 5, 5)
+                ChangeSlabType(lava_x, lava_y, "LAVA", "NONE")
+                CreateEffectAtPos("EFFECT_EXPLOSION_4", Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 1)
+                CreateEffectAtPos("EFFECT_DIRT_RUBBLE_BIG", Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 5)
+                RevealMapRect(PLAYER0, Slab_to_subtile(lava_x), Slab_to_subtile(lava_y), 5, 5)
                 
                 -- Another ipairs loop, this time going over all creatures on the map.
                 -- If the creature is within 5 subtiles of our flowing lava, and belongs to White, kill them.
-                local creatures = Get_creatures()
+                local creatures = GetCreatures()
                 
                 for index, creature in ipairs(creatures) do
                     local distance = Get_distance(creature.pos.stl_x, creature.pos.stl_y, Slab_to_subtile(lava_x), Slab_to_subtile(lava_y))
                     if distance <= 5 and creature.owner == PLAYER_GOOD then
-                        creature:kill_creature()
+                        creature:kill()
                     end
                 end
                 
@@ -204,13 +204,13 @@ end
 -- Lava is only allowed to turn specific slab kinds into lava.
 -- We reject everything else by only returning true when the kind matches one we want.
 function Lava_can_spread_to_slab_type(slab_x, slab_y)
-    if Get_slab(slab_x, slab_y).kind == "DIRT" then return true end
-    if Get_slab(slab_x, slab_y).kind == "TORCH_DIRT" then return true end
-    if Get_slab(slab_x, slab_y).kind == "DRAPE_WALL" then return true end
-    if Get_slab(slab_x, slab_y).kind == "TORCH_WALL" then return true end
-    if Get_slab(slab_x, slab_y).kind == "TWINS_WALL" then return true end
-    if Get_slab(slab_x, slab_y).kind == "WOMAN_WALL" then return true end
-    if Get_slab(slab_x, slab_y).kind == "PAIR_WALL" then return true end
+    if GetSlab(slab_x, slab_y).kind == "DIRT" then return true end
+    if GetSlab(slab_x, slab_y).kind == "TORCH_DIRT" then return true end
+    if GetSlab(slab_x, slab_y).kind == "DRAPE_WALL" then return true end
+    if GetSlab(slab_x, slab_y).kind == "TORCH_WALL" then return true end
+    if GetSlab(slab_x, slab_y).kind == "TWINS_WALL" then return true end
+    if GetSlab(slab_x, slab_y).kind == "WOMAN_WALL" then return true end
+    if GetSlab(slab_x, slab_y).kind == "PAIR_WALL" then return true end
 
     return false
 end

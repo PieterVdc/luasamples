@@ -18,49 +18,49 @@ end
 
 
 function Setup()
-    Set_generate_speed(400)
+    SetGenerateSpeed(400)
 	
-    Max_creatures(PLAYER0, 50)
+    MaxCreatures(PLAYER0, 50)
 
-    Start_money(PLAYER0, 10000)
+    StartMoney(PLAYER0, 10000)
 
     -- Start heroes easier than normal.
     Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER_GOOD, Health, 60)")
 
-    Add_creature_to_pool("SPIDER", 4)
-    Add_creature_to_pool("DRAGON", 4)
-    Add_creature_to_pool("SORCEROR", 4)
-    Add_creature_to_pool("BILE_DEMON", 4)
-    Add_creature_to_pool("TROLL", 4)
-    Add_creature_to_pool("ORC", 8)
-    Add_creature_to_pool("MAIDEN", 4)
-    Add_creature_to_pool("TENTACLE", 8)
-    Add_creature_to_pool("DARK_MISTRESS", 8)
-    Add_creature_to_pool("HELL_HOUND", 8)
+    AddCreatureToPool("SPIDER", 4)
+    AddCreatureToPool("DRAGON", 4)
+    AddCreatureToPool("SORCEROR", 4)
+    AddCreatureToPool("BILE_DEMON", 4)
+    AddCreatureToPool("TROLL", 4)
+    AddCreatureToPool("ORC", 8)
+    AddCreatureToPool("MAIDEN", 4)
+    AddCreatureToPool("TENTACLE", 8)
+    AddCreatureToPool("DARK_MISTRESS", 8)
+    AddCreatureToPool("HELL_HOUND", 8)
 
-    Creature_available("ALL_PLAYERS", "SPIDER", true, 0)
-    Creature_available("ALL_PLAYERS", "DRAGON", true, 0)
-    Creature_available("ALL_PLAYERS", "SORCEROR", true, 0)
-    Creature_available("ALL_PLAYERS", "BILE_DEMON", true, 0)
-    Creature_available("ALL_PLAYERS", "TROLL", true, 0)
-    Creature_available("ALL_PLAYERS", "ORC", true, 0)
-    Creature_available("ALL_PLAYERS", "MAIDEN", true, 0)
-    Creature_available("ALL_PLAYERS", "TENTACLE", true, 0)
-    Creature_available("ALL_PLAYERS", "DARK_MISTRESS", true, 0)
-    Creature_available("ALL_PLAYERS", "HELL_HOUND", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "SPIDER", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "DRAGON", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "SORCEROR", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "BILE_DEMON", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "TROLL", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "ORC", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "MAIDEN", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "TENTACLE", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "DARK_MISTRESS", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "HELL_HOUND", true, 0)
 
     -- These rooms are always available.
-    Room_available("ALL_PLAYERS", "TREASURE", 2, true)
-    Room_available("ALL_PLAYERS", "LAIR", 2, true)
-    Room_available("ALL_PLAYERS", "GARDEN", 2, true)
-    Room_available("ALL_PLAYERS", "TRAINING", 2, true)
-    Room_available("ALL_PLAYERS", "RESEARCH", 2, true)
-    Room_available("ALL_PLAYERS", "WORKSHOP", 2, true)
-    Room_available("ALL_PLAYERS", "BRIDGE", 2, false)
+    RoomAvailable("ALL_PLAYERS", "TREASURE", 2, true)
+    RoomAvailable("ALL_PLAYERS", "LAIR", 2, true)
+    RoomAvailable("ALL_PLAYERS", "GARDEN", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TRAINING", 2, true)
+    RoomAvailable("ALL_PLAYERS", "RESEARCH", 2, true)
+    RoomAvailable("ALL_PLAYERS", "WORKSHOP", 2, true)
+    RoomAvailable("ALL_PLAYERS", "BRIDGE", 2, false)
 
     -- Pre-placed hero room types you can steal for yourself.
-    Room_available("ALL_PLAYERS", "GUARD_POST", 3, false)
-    Room_available("ALL_PLAYERS", "BARRACKS", 3, false)
+    RoomAvailable("ALL_PLAYERS", "GUARD_POST", 3, false)
+    RoomAvailable("ALL_PLAYERS", "BARRACKS", 3, false)
 
     -- 3/5 of these rooms will be available.
     local advancedRooms = {
@@ -84,9 +84,9 @@ function Setup()
     until picks <= 0
 
     -- These spells are always available.
-    Magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SIGHT", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_IMP", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_SIGHT", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
 
     -- 8/16 of these spells will be available.
     local randomSpells = {
@@ -114,7 +114,7 @@ function Setup()
         local magic = randomSpells[randomIndex]
         print(magic)
         if magic ~= nil then
-            Magic_available("ALL_PLAYERS", randomSpells[math.random(#randomSpells)], true, false)
+            MagicAvailable("ALL_PLAYERS", randomSpells[math.random(#randomSpells)], true, false)
             table.remove(randomSpells, randomIndex)
             picks = picks - 1
         end
@@ -136,7 +136,7 @@ function Setup()
         local randomIndex = math.random(#randomTraps)
         local trap = randomTraps[randomIndex]
         if trap ~= nil then
-            Trap_available("ALL_PLAYERS", randomTraps[math.random(#randomTraps)], true, 0)
+            TrapAvailable("ALL_PLAYERS", randomTraps[math.random(#randomTraps)], true, 0)
             table.remove(randomTraps, randomIndex)
             picks = picks - 1
         end
@@ -157,7 +157,7 @@ function Setup()
         local randomIndex = math.random(#randomDoors)
         local door = randomDoors[randomIndex]
         if door ~= nil then
-            Door_available("ALL_PLAYERS", randomDoors[math.random(#randomDoors)], true, 0)
+            DoorAvailable("ALL_PLAYERS", randomDoors[math.random(#randomDoors)], true, 0)
             randomDoors[randomIndex] = nil
             table.remove(randomDoors, randomIndex)
             picks = picks - 1
@@ -273,21 +273,21 @@ end
 
 
 function Start_hero_tunnellers()
-    Add_tunneller_to_level(PLAYER_GOOD, -1, "DUNGEON", 0, 1, 250)
-    Add_tunneller_to_level(PLAYER_GOOD, -2, "ACTION_POINT", 1, 1, 250)
-    Add_tunneller_to_level(PLAYER_GOOD, -3, "DUNGEON", 0, 1, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -1, "DUNGEON", 0, 1, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -2, "ACTION_POINT", 1, 1, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -3, "DUNGEON", 0, 1, 250)
 end
 
 
 function Send_more_tunnellers()
-    Add_tunneller_to_level(PLAYER_GOOD, -1, "DUNGEON", 0, 4, 250)
-    Add_tunneller_to_level(PLAYER_GOOD, -2, "DUNGEON", 0, 4, 250)
-    Add_tunneller_to_level(PLAYER_GOOD, -3, "DUNGEON", 0, 4, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -1, "DUNGEON", 0, 4, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -2, "DUNGEON", 0, 4, 250)
+    AddTunnellerToLevel(PLAYER_GOOD, -3, "DUNGEON", 0, 4, 250)
 
     -- After 12000 game ticks (10 minutes), slow down how quickly new creatures enter the player's dungeon.
     -- And reset hero health back to normal (up from 60%).
-    Set_generate_speed(800)
-    Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER_GOOD, Health, 100)")
+    SetGenerateSpeed(800)
+    RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER_GOOD, Health, 100)")
 end
 
 
@@ -295,10 +295,10 @@ end
 -- This helper function checks whether a given slab belongs to White and is one of those 3.
 -- Otherwise, it returns false. This way, we can filter out the slabs we don't want.
 function Slab_is_hero_room(slb_x, slb_y)
-    if Get_slab(slb_x, slb_y).owner ~= PLAYER_GOOD then return false end
-    if Get_slab(slb_x, slb_y).kind == "BARRACK_AREA" then return true end
-    if Get_slab(slb_x, slb_y).kind == "BOOK_SHELVES" then return true end
-    if Get_slab(slb_x, slb_y).kind == "TREASURY_AREA" then return true end
+    if GetSlab(slb_x, slb_y).owner ~= PLAYER_GOOD then return false end
+    if GetSlab(slb_x, slb_y).kind == "BARRACK_AREA" then return true end
+    if GetSlab(slb_x, slb_y).kind == "BOOK_SHELVES" then return true end
+    if GetSlab(slb_x, slb_y).kind == "TREASURY_AREA" then return true end
     return false
 end
 
@@ -333,19 +333,19 @@ function Do_hero_room_spawning()
 
         if slabKind == "BARRACK_AREA" then
             local barracksHeroes = { "BARBARIAN", "BARBARIAN", "ARCHER", "ARCHER", "SAMURAI" } -- 2/5 chance for Barbarian, 2/5 chance for Archer, 1/5 chance for Samurai
-            hero = Add_creature_to_level(PLAYER_GOOD, barracksHeroes[math.random(#barracksHeroes)], randPosLocation, heroLevel, heroGold)
+            hero = AddCreatureToLevel(PLAYER_GOOD, barracksHeroes[math.random(#barracksHeroes)], randPosLocation, heroLevel, heroGold)
         elseif slabKind == "BOOK_SHELVES" then
             local libraryHeroes = { "WIZARD", "WITCH", "MONK", "DRUID", "TIME_MAGE"}
-            hero = Add_creature_to_level(PLAYER_GOOD, libraryHeroes[math.random(#libraryHeroes)], randPosLocation, heroLevel, heroGold)
+            hero = AddCreatureToLevel(PLAYER_GOOD, libraryHeroes[math.random(#libraryHeroes)], randPosLocation, heroLevel, heroGold)
         elseif slabKind == "TREASURY_AREA" then
             local treasureHeroes = { "THIEF", "DWARFA", "GIANT", "FAIRY"}
-            hero = Add_creature_to_level(PLAYER_GOOD, treasureHeroes[math.random(#treasureHeroes)], randPosLocation, heroLevel, heroGold)
+            hero = AddCreatureToLevel(PLAYER_GOOD, treasureHeroes[math.random(#treasureHeroes)], randPosLocation, heroLevel, heroGold)
         end
 
         -- Make sure our hero spawned correctly before trying to do more things to them.
         if hero ~= nil then
-            Create_effect("EFFECT_BALL_PUFF_WHITE", hero.pos, 2)
-            Use_spell_on_creature(hero, "SPELL_ARMOUR", 1)
+            CreateEffect("EFFECT_BALL_PUFF_WHITE", hero.pos, 2)
+            UseSpellOnCreature(hero, "SPELL_ARMOUR", 1)
         end
     else
         -- Out of hero rooms as our heroRoomSlabLocations table was empty.
@@ -361,35 +361,35 @@ function Spawn_final_wave()
     local heroLevel = math.ceil(math.sqrt(PLAYER0.GAME_TURN / 1000))
     heroLevel = math.min(heroLevel, 10)
 
-    Create_party("FINAL")
-    Add_to_party("FINAL", "KNIGHT", heroLevel, 5000, "ATTACK_DUNGEON_HEART", 2000)
+    CreateParty("FINAL")
+    AddToParty("FINAL", "KNIGHT", heroLevel, 5000, "ATTACK_DUNGEON_HEART", 2000)
 
     -- Give our Knight some randomized support.
     for i = 1, 3, 1 do
         local partyOptions = { "ARCHER", "WIZARD", "FAIRY", "WITCH", "DRUID", "TIME_MAGE"}
         local partyPick = partyOptions[math.random(#partyOptions)]
         local supportLevel = math.max(1, heroLevel - 2)
-        Add_to_party("FINAL", partyPick, supportLevel, 500, "DEFEND_PARTY", 2000)
+        AddToParty("FINAL", partyPick, supportLevel, 500, "DEFEND_PARTY", 2000)
     end
 
-    local party = Add_party_to_level(PLAYER_GOOD, "FINAL", -math.random(1,3))
+    local party = AddPartyToLevel(PLAYER_GOOD, "FINAL", -math.random(1,3))
 
     -- Save our Knight as a global variable in Game for later and so it doesn't get lost when saving and loading the game.
     -- This also turns off the repeating Do_hero_room_spawning timer as it checks for Game.lord == nil.
     Game.lord = party[1]
 
     RegisterTimerEvent(Spawn_lord_peasants, 200, false)
-    RegisterCreatureDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
+    RegisterCreatureDeathEvent(function() WinGame(PLAYER0) end, Game.lord)
 end
 
 
 -- Periodically make the Knight heal and spawn a Thief as a little showcase of creature specific scripting.
 function Spawn_lord_peasants()
     if Game.lord:isValid() then
-        Create_effect("EFFECT_BALL_PUFF_WHITE", Game.lord.pos, 512)
-        Use_spell_on_creature(Game.lord, "SPELL_HEAL", 1)
+        CreateEffect("EFFECT_BALL_PUFF_WHITE", Game.lord.pos, 512)
+        UseSpellOnCreature(Game.lord, "SPELL_HEAL", 1)
         local thiefLevel = math.max(1, math.floor(Game.lord.level / 2))
-        Add_creature_to_level(PLAYER_GOOD, "THIEF", Game.lord.pos, thiefLevel, 0)
+        AddCreatureToLevel(PLAYER_GOOD, "THIEF", Game.lord.pos, thiefLevel, 0)
 
         RegisterTimerEvent(Spawn_lord_peasants, 200, false)
     end

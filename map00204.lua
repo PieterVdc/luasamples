@@ -9,61 +9,61 @@
 
 
 function OnGameStart()
-	Quick_objective("It's getting hard to see so deep down, Keeper. Explore the area. Use ALARM TRAPs to gain permanent vision.")
+	QuickObjective("It's getting hard to see so deep down, Keeper. Explore the area. Use ALARM TRAPs to gain permanent vision.")
 	
     My_setup()
 end
 
 
 function My_setup()
-    Set_generate_speed(350)
+    SetGenerateSpeed(350)
 	
-    Max_creatures(PLAYER0, 30)
+    MaxCreatures(PLAYER0, 30)
 
-    Start_money(PLAYER0, 6000)
+    StartMoney(PLAYER0, 6000)
 
-    Add_creature_to_pool("FLY", 2)
-    Add_creature_to_pool("BUG", 8)
-    Add_creature_to_pool("SPIDER", 8)
-    Add_creature_to_pool("BILE_DEMON", 4)
-    Add_creature_to_pool("DEMONSPAWN", 8)
-    Add_creature_to_pool("SORCEROR", 8)
-    Add_creature_to_pool("ORC", 8)
+    AddCreatureToPool("FLY", 2)
+    AddCreatureToPool("BUG", 8)
+    AddCreatureToPool("SPIDER", 8)
+    AddCreatureToPool("BILE_DEMON", 4)
+    AddCreatureToPool("DEMONSPAWN", 8)
+    AddCreatureToPool("SORCEROR", 8)
+    AddCreatureToPool("ORC", 8)
 
-    Creature_available("ALL_PLAYERS", "FLY", true, 1)
-    Creature_available("ALL_PLAYERS", "BUG", true, 0)
-    Creature_available("ALL_PLAYERS", "SPIDER", true, 0)
-    Creature_available("ALL_PLAYERS", "BILE_DEMON", true, 0)
-    Creature_available("ALL_PLAYERS", "DEMONSPAWN", true, 0)
-    Creature_available("ALL_PLAYERS", "SORCEROR", true, 0)
-    Creature_available("ALL_PLAYERS", "ORC", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "FLY", true, 1)
+    CreatureAvailable("ALL_PLAYERS", "BUG", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "SPIDER", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "BILE_DEMON", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "DEMONSPAWN", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "SORCEROR", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "ORC", true, 0)
 
-    Room_available("ALL_PLAYERS", "TREASURE", 2, true)
-    Room_available("ALL_PLAYERS", "LAIR", 2, true)
-    Room_available("ALL_PLAYERS", "GARDEN", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TREASURE", 2, true)
+    RoomAvailable("ALL_PLAYERS", "LAIR", 2, true)
+    RoomAvailable("ALL_PLAYERS", "GARDEN", 2, true)
 
-    Room_available("ALL_PLAYERS", "BRIDGE", 2, false)
+    RoomAvailable("ALL_PLAYERS", "BRIDGE", 2, false)
 
     -- Have to find and claim these on the map.
-    Room_available("ALL_PLAYERS", "TRAINING", 3, false)
-    Room_available("ALL_PLAYERS", "RESEARCH", 3, false)
-    Room_available("ALL_PLAYERS", "WORKSHOP", 3, false)
-    Room_available("ALL_PLAYERS", "BARRACKS", 3, false)
+    RoomAvailable("ALL_PLAYERS", "TRAINING", 3, false)
+    RoomAvailable("ALL_PLAYERS", "RESEARCH", 3, false)
+    RoomAvailable("ALL_PLAYERS", "WORKSHOP", 3, false)
+    RoomAvailable("ALL_PLAYERS", "BARRACKS", 3, false)
 
-    Magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SPEED", true, false)
-    Magic_available("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, false)
+    MagicAvailable("ALL_PLAYERS", "POWER_IMP", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_SPEED", true, false)
+    MagicAvailable("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, false)
 
-    Door_available("ALL_PLAYERS", "WOOD", true, 0)
+    DoorAvailable("ALL_PLAYERS", "WOOD", true, 0)
 
-    Trap_available("ALL_PLAYERS", "ALARM", true, 8)
+    TrapAvailable("ALL_PLAYERS", "ALARM", true, 8)
 
     -- Make Alarm Traps easier to create in the Workshop.
-    Set_trap_configuration("ALARM","ManufactureRequired",9000)
+    SetTrapConfiguration("ALARM","ManufactureRequired",9000)
 
-    Create_party("STEALER")
-    Add_to_party("STEALER", "THIEF", 1, 0, "STEAL_GOLD", 0)
+    CreateParty("STEALER")
+    AddToParty("STEALER", "THIEF", 1, 0, "STEAL_GOLD", 0)
 
     RegisterTimerEvent(Update_vision, 1, true)
 
@@ -78,33 +78,33 @@ end
 
 
 function Update_vision()
-    Conceal_map_rect(PLAYER0, 61, 61, 122, 122, true)
+    ConcealMapRect(PLAYER0, 61, 61, 122, 122, true)
 
-    local creatures = Get_creatures()
+    local creatures = GetCreatures()
     for index, creature in ipairs(creatures) do
         if creature.owner == PLAYER0 then
-            Reveal_map_rect(PLAYER0, creature.pos.stl_x, creature.pos.stl_y, 21, 21)
+            RevealMapRect(PLAYER0, creature.pos.stl_x, creature.pos.stl_y, 21, 21)
         end
     end
 
-    local objects = Get_things_of_class("Object")
+    local objects = GetThingsOfClass("Object")
     for index, object in ipairs(objects) do
         if object.model == "SOUL_CONTAINER" then
-            Reveal_map_rect(PLAYER0, object.pos.stl_x, object.pos.stl_y, 24, 24)
+            RevealMapRect(PLAYER0, object.pos.stl_x, object.pos.stl_y, 24, 24)
         end
     end
 
-    local traps = Get_things_of_class("Trap")
+    local traps = GetThingsOfClass("Trap")
     for index, trap in ipairs(traps) do
         if trap.model == "ALARM" then
-            Reveal_map_rect(PLAYER0, trap.pos.stl_x, trap.pos.stl_y, 30, 30)
+            RevealMapRect(PLAYER0, trap.pos.stl_x, trap.pos.stl_y, 30, 30)
         end
     end
 end
 
 
 function Create_random_thieves()
-    local gateThief = Add_party_to_level(PLAYER_GOOD, "STEALER", -math.random(1,2))
+    local gateThief = AddPartyToLevel(PLAYER_GOOD, "STEALER", -math.random(1,2))
 
     local spawnTimer = RegisterTimerEvent(Create_random_thieves, 900 + math.random(0, 600), false)
     TriggerAddCondition(spawnTimer, function() return Game.lord == nil end)
@@ -112,9 +112,9 @@ end
 
 
 function Slab_is_walkable(slb_x, slb_y)
-    if Get_slab(slb_x, slb_y).kind == "PATH" then return true end
-    if Get_slab(slb_x, slb_y).kind == "PRETTY_PATH" then return true end
-    if Get_slab(slb_x, slb_y).kind == "WATER" then return true end
+    if GetSlab(slb_x, slb_y).kind == "PATH" then return true end
+    if GetSlab(slb_x, slb_y).kind == "PRETTY_PATH" then return true end
+    if GetSlab(slb_x, slb_y).kind == "WATER" then return true end
 
     return false
 end
@@ -138,36 +138,36 @@ end
 
 
 function Send_wave_one()
-    Quick_objective("I hope you're prepared, Keeper. The Lord and his lackeys are on their way.")
+    QuickObjective("I hope you're prepared, Keeper. The Lord and his lackeys are on their way.")
 
-    Create_party("ONE")
-    Add_to_party("ONE", "BARBARIAN", 6, 0, "ATTACK_DUNGEON_HEART", 0)
-    Add_to_party("ONE", "BARBARIAN", 5, 0, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("ONE", "ARCHER", 4, 0, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("ONE", "ARCHER", 4, 0, "ATTACK_DUNGEON_HEART", 0)
+    CreateParty("ONE")
+    AddToParty("ONE", "BARBARIAN", 6, 0, "ATTACK_DUNGEON_HEART", 0)
+    AddToParty("ONE", "BARBARIAN", 5, 0, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("ONE", "ARCHER", 4, 0, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("ONE", "ARCHER", 4, 0, "ATTACK_DUNGEON_HEART", 0)
 
-    Add_party_to_level(PLAYER_GOOD, "ONE", -3)
+    AddPartyToLevel(PLAYER_GOOD, "ONE", -3)
 end
 
 
 function Send_wave_final()
-    Change_slab_type(24, 8, "PATH", "NONE")
-    Change_slab_type(25, 8, "PATH", "NONE")
+    ChangeSlabType(24, 8, "PATH", "NONE")
+    ChangeSlabType(25, 8, "PATH", "NONE")
 
-    Create_effect_at_pos("EFFECT_EXPLOSION_4", 75, 27.5, 3)
-    Create_effect_at_pos("EFFECT_DIRT_RUBBLE_BIG", 73, 25, 8)
-    Create_effect_at_pos("EFFECT_DIRT_RUBBLE_BIG", 76, 25, 8)
+    CreateEffectAtPos("EFFECT_EXPLOSION_4", 75, 27.5, 3)
+    CreateEffectAtPos("EFFECT_DIRT_RUBBLE_BIG", 73, 25, 8)
+    CreateEffectAtPos("EFFECT_DIRT_RUBBLE_BIG", 76, 25, 8)
 
-    Create_party("FINAL")
-    Add_to_party("FINAL", "KNIGHT", 5, 3000, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("FINAL", "ARCHER", 5, 0, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("FINAL", "ARCHER", 5, 0, "ATTACK_DUNGEON_HEART", 0)
-    Add_to_party("FINAL", "MONK", 3, 0, "ATTACK_DUNGEON_HEART", 0)
-    Add_to_party("FINAL", "MONK", 3, 0, "ATTACK_DUNGEON_HEART", 0)
+    CreateParty("FINAL")
+    AddToParty("FINAL", "KNIGHT", 5, 3000, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("FINAL", "ARCHER", 5, 0, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("FINAL", "ARCHER", 5, 0, "ATTACK_DUNGEON_HEART", 0)
+    AddToParty("FINAL", "MONK", 3, 0, "ATTACK_DUNGEON_HEART", 0)
+    AddToParty("FINAL", "MONK", 3, 0, "ATTACK_DUNGEON_HEART", 0)
 
-    local party = Add_party_to_level(PLAYER_GOOD, "FINAL", -4)
+    local party = AddPartyToLevel(PLAYER_GOOD, "FINAL", -4)
 
     Game.lord = party[1]
 
-    RegisterCreatureDeathEvent(function() Win_game(PLAYER0) end, Game.lord)
+    RegisterCreatureDeathEvent(function() WinGame(PLAYER0) end, Game.lord)
 end

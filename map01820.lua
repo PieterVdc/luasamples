@@ -59,73 +59,73 @@ function Initialise()
     Game.BattleUnitCounter = 0
 
     for _, cr in ipairs(Creatures) do
-        Set_box_tooltip(cr.SpecialBoxId, cr.BoxToolTip)
+        SetBoxTooltip(cr.SpecialBoxId, cr.BoxToolTip)
         
     end
 
-    Set_box_tooltip(18, "START GAME")
-    Set_box_tooltip(19, "RESET ROUND, no money refund!")
-    Set_box_tooltip(20, "FREE IMP")
+    SetBoxTooltip(18, "START GAME")
+    SetBoxTooltip(19, "RESET ROUND, no money refund!")
+    SetBoxTooltip(20, "FREE IMP")
 
-    Quick_objective("This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
+    QuickObjective("This is a rudimentary Auto Chess/Auto Battle implementation for Dungeon Keeper -Use the special boxes to select your creature. -Watch your gold, you receive a small amount back each round, and you get a bonus for every creature of yours that survives. -If you want to save gold or have none left, you can fill your battle lines with Imps using the special box. -Each surviving creature deals damage to the enemy heart. There are up to 9 rounds with an increasing number of creatures. -If both hearts are still standing after 9 rounds, the Keeper with the most victories wins. -The opponent receives and places their creatures completely randomly. -You can select from randomly chosen creatures each round (their level is set at the beginning of the game and does not change between rounds). -If you get stuck, you can restart the round using the special box, but note that you won't get back the gold you spent in that round.")
 
-    Conceal_map_rect(PLAYER0, 133, 121, 100, 100, true)
+    ConcealMapRect(PLAYER0, 133, 121, 100, 100, true)
 
-    Reveal_map_location(PLAYER0, "PLAYER0", 18)
-    Computer_player(PLAYER1, 0)
+    RevealMapLocation(PLAYER0, "PLAYER0", 18)
+    ComputerPlayer(PLAYER1, 0)
     --Set_computer_globals(PLAYER1, 0, 0, 0, 0, 0, 0, 0)
     
-    Start_money(PLAYER0, 2000)
+    StartMoney(PLAYER0, 2000)
 
-    Set_creature_instance("DRUID", 2, "RANGED_HEAL", 2)
-    Set_creature_instance("DRUID", 3, "SLOW", 3)
-    Set_creature_instance("DRUID", 5, "RANGED_ARMOUR", 5)
-    Set_creature_instance("GHOST", 5, "RANGED_REBOUND", 5)
-    Set_creature_instance("TIME_MAGE", 8, "RANGED_SPEED", 6)
-    Set_creature_instance("IMP", 1, "NULL", 1)
-    Magic_available(PLAYER0, "POWER_IMP", false, false)
-    Magic_available(PLAYER1, "POWER_IMP", false, false)
-    Magic_available(PLAYER1, "POWER_HAND", false, false)
-    Magic_available(PLAYER1, "POWER_SLAP", false, false)
-    Magic_available(PLAYER0, "POWER_POSSESS", false, false)
+    SetCreatureInstance("DRUID", 2, "RANGED_HEAL", 2)
+    SetCreatureInstance("DRUID", 3, "SLOW", 3)
+    SetCreatureInstance("DRUID", 5, "RANGED_ARMOUR", 5)
+    SetCreatureInstance("GHOST", 5, "RANGED_REBOUND", 5)
+    SetCreatureInstance("TIME_MAGE", 8, "RANGED_SPEED", 6)
+    SetCreatureInstance("IMP", 1, "NULL", 1)
+    MagicAvailable(PLAYER0, "POWER_IMP", false, false)
+    MagicAvailable(PLAYER1, "POWER_IMP", false, false)
+    MagicAvailable(PLAYER1, "POWER_HAND", false, false)
+    MagicAvailable(PLAYER1, "POWER_SLAP", false, false)
+    MagicAvailable(PLAYER0, "POWER_POSSESS", false, false)
  
-    Set_object_configuration("SPECBOX_CUSTOM", "DestroyOnLava", 1)
-    Set_object_configuration("CTA_ENSIGN", "MaximumSize", 1)
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Stand, 556)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Ambulate, 554)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Attack, 558)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, GotHit, 560)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, GotHit, 560)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, PowerGrab, 574)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, GotSlapped, 576)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Celebrate, 564)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Scream, 570)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, DropDead, 572)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, DeadSplat, 946)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, QuerySymbol, 154)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, HandSymbol, 222)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Foot, 9, 4)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Hit, 490, 1)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Happy, 488, 1)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Hurt, 490, 3)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Die, 493, 2)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Hang, 495, 1)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Drop, 4961, 4)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Slap, 490, 3)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Fight, 485, 3)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Health, 75)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Strength, 5)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Armour, 5)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Dexterity, 60)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, FearWounded, 0)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, FearStronger, 10000)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Defence, 7)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, Luck, 0)")
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, SlapsToKill, 5)")
-    Run_DKScript_command("Set_creature_property(\"TUNNELLER\", \"SPECIAL_DIGGER\", 0)")
+    SetObjectConfiguration("SPECBOX_CUSTOM", "DestroyOnLava", 1)
+    SetObjectConfiguration("CTA_ENSIGN", "MaximumSize", 1)
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Stand, 556)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Ambulate, 554)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Attack, 558)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, GotHit, 560)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, GotHit, 560)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, PowerGrab, 574)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, GotSlapped, 576)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Celebrate, 564)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Scream, 570)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, DropDead, 572)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, DeadSplat, 946)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, QuerySymbol, 154)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, HandSymbol, 222)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Foot, 9, 4)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Hit, 490, 1)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Happy, 488, 1)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Hurt, 490, 3)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Die, 493, 2)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Hang, 495, 1)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Drop, 4961, 4)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Slap, 490, 3)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Fight, 485, 3)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Health, 75)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Strength, 5)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Armour, 5)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Dexterity, 60)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, FearWounded, 0)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, FearStronger, 10000)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Defence, 7)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, Luck, 0)")
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, SlapsToKill, 5)")
+    RunDKScriptCommand("Set_creature_property(\"TUNNELLER\", \"SPECIAL_DIGGER\", 0)")
 
     
-    Set_game_rule("DungeonHeartHealHealth", 0)
+    SetGameRule("DungeonHeartHealHealth", 0)
 
 end
 
@@ -140,7 +140,7 @@ function select_units_in_columns()
                 
                 local level = math.random(cr.levelRange[1], cr.levelRange[2])
                 print(cr.Creature_type)
-                col.creature = Add_creature_to_level(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, 0)
+                col.creature = AddCreatureToLevel(PLAYER_GOOD, cr.Creature_type, col.spawnCreatureAp, 1, level, "DEFAULT")
 
                 break
             end
@@ -160,8 +160,8 @@ function damageHeart_effect(player)
         Game.player1heartEffectCounter = (Game.player1heartEffectCounter + 1) % 9
         location = Game.player1heartEffectCounter + 50
     end
-    Add_heart_health(player, -2000,false)
-    Create_effects_line(location, player, 0, 3, 5, effect)
+    AddHeartHealth(player, -2000,false)
+    CreateEffectsLine(location, player, 0, 3, 5, effect)
 
 end
 
@@ -173,8 +173,8 @@ function damageHeart()
             damageHeart_effect(PLAYER0)
         end
 
-        Create_effects_line("COMBAT", PLAYER0, 0, 6, 10, "EFFECTELEMENT_BLUE_SPARKLES_LARGE")
-        Create_effect("EFFECT_WORD_OF_POWER", PLAYER0,0)
+        CreateEffectsLine("COMBAT", PLAYER0, 0, 6, 10, "EFFECTELEMENT_BLUE_SPARKLES_LARGE")
+        CreateEffect("EFFECT_WORD_OF_POWER", PLAYER0,0)
     end
     if PLAYER1.TOTAL_CREATURES == 0 then
         if PLAYER0.TOTAL_CREATURES > 0 then
@@ -182,9 +182,9 @@ function damageHeart()
         end
         processPlayerReward()
 
-        Add_heart_health(PLAYER1, -1500,false)
-        Create_effects_line("COMBAT", PLAYER1, 0, 6, 10, "EFFECTELEMENT_RED_SPARKLES_LARGE")
-        Create_effect("EFFECT_WORD_OF_POWER", PLAYER1,0)
+        AddHeartHealth(PLAYER1, -1500,false)
+        CreateEffectsLine("COMBAT", PLAYER1, 0, 6, 10, "EFFECTELEMENT_RED_SPARKLES_LARGE")
+        CreateEffect("EFFECT_WORD_OF_POWER", PLAYER1,0)
     end
     
 end
@@ -195,13 +195,13 @@ function processPlayerReward()
 
     local counter = 0
 
-    local creatures = Get_things_of_class("Creature")
+    local creatures = GetThingsOfClass("Creature")
     
     for index, cr in ipairs(creatures) do
         counter = counter + 1
         --timer so only 1 effect per tick instead of all simultaniosly
         RegisterTimerEvent(function (eventData,triggerData) 
-                                Create_effect("EFFECTELEMENT_PRICE", triggerData.pos, 100)
+                                CreateEffect("EFFECTELEMENT_PRICE", triggerData.pos, 100)
                                 PLAYER0:add_gold(100)
                             end,counter,false).triggerData.pos = cr.pos
     end
@@ -210,7 +210,7 @@ function processPlayerReward()
 end
 
 function kill_all_creatures()
-    local creatures = Get_things_of_class("Creature")
+    local creatures = GetCreatures()
     
     for index, cr in ipairs(creatures) do
         cr:kill()
@@ -227,40 +227,40 @@ end
 function start_fight_phase()
 
     ---- Fight phase
-    Change_slab_type(40, 40, "BRIDGE_FRAME", "MATCH")
+    ChangeSlabType(40, 40, "BRIDGE_FRAME", "MATCH")
 
-    Use_power_at_location(PLAYER0, 63, "POWER_CALL_TO_ARMS", 3, true)
-    Use_power_at_location(PLAYER1, 63, "POWER_CALL_TO_ARMS", 3, true)
+    UsePowerAtLocation(PLAYER0, 63, "POWER_CALL_TO_ARMS", 3, true)
+    UsePowerAtLocation(PLAYER1, 63, "POWER_CALL_TO_ARMS", 3, true)
 
-    Magic_available(PLAYER0, "POWER_CALL_TO_ARMS", true, true)
-    Magic_available(PLAYER1, "POWER_CALL_TO_ARMS", true, true)
-    Use_power_at_pos(PLAYER0,91,37,"POWER_CAVE_IN", 1, true)
+    MagicAvailable(PLAYER0, "POWER_CALL_TO_ARMS", true, true)
+    MagicAvailable(PLAYER1, "POWER_CALL_TO_ARMS", true, true)
+    UsePowerAtPos(PLAYER0,91,37,"POWER_CAVE_IN", 1, true)
     --SET_PLAYER_MODIFIER(PLAYER0, "SpellDamage", 500)
     --SET_PLAYER_MODIFIER(PLAYER0, "Strength", 500)
     --SET_PLAYER_MODIFIER(PLAYER1, "SpellDamage", 500)
     --SET_PLAYER_MODIFIER(PLAYER1, "Strength", 500)
 
-    Run_DKScript_command("Set_game_rule(\"BodyRemainsFor\", 2000)")
-    Run_DKScript_command("Set_creature_configuration(\"TUNNELLER\",     \"BaseSpeed\", 96)")
-    Run_DKScript_command("Set_creature_configuration(\"BILE_DEMON\",    \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"BUG\",           \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"DARK_MISTRESS\", \"BaseSpeed\", 64)")
-    Run_DKScript_command("Set_creature_configuration(\"DEMONSPAWN\",    \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"DRAGON\",        \"BaseSpeed\", 32)")
-    Run_DKScript_command("Set_creature_configuration(\"DRUID\",         \"BaseSpeed\", 32)")
-    Run_DKScript_command("Set_creature_configuration(\"FLY\",           \"BaseSpeed\", 128)")
-    Run_DKScript_command("Set_creature_configuration(\"GHOST\",         \"BaseSpeed\", 64)")
-    Run_DKScript_command("Set_creature_configuration(\"HELL_HOUND\",    \"BaseSpeed\", 96)")
-    Run_DKScript_command("Set_creature_configuration(\"HORNY\",         \"BaseSpeed\", 96)")
-    Run_DKScript_command("Set_creature_configuration(\"ORC\",           \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"SKELETON\",      \"BaseSpeed\", 64)")
-    Run_DKScript_command("Set_creature_configuration(\"SORCEROR\",      \"BaseSpeed\", 32)")
-    Run_DKScript_command("Set_creature_configuration(\"SPIDER\",        \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"TENTACLE\",      \"BaseSpeed\", 32)")
-    Run_DKScript_command("Set_creature_configuration(\"TIME_MAGE\",     \"BaseSpeed\", 32)")
-    Run_DKScript_command("Set_creature_configuration(\"TROLL\",         \"BaseSpeed\", 48)")
-    Run_DKScript_command("Set_creature_configuration(\"VAMPIRE\",       \"BaseSpeed\", 56)")
-    Magic_available(PLAYER0, "POWER_HAND", false, false)
+    RunDKScriptCommand("Set_game_rule(\"BodyRemainsFor\", 2000)")
+    RunDKScriptCommand("Set_creature_configuration(\"TUNNELLER\",     \"BaseSpeed\", 96)")
+    RunDKScriptCommand("Set_creature_configuration(\"BILE_DEMON\",    \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"BUG\",           \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"DARK_MISTRESS\", \"BaseSpeed\", 64)")
+    RunDKScriptCommand("Set_creature_configuration(\"DEMONSPAWN\",    \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"DRAGON\",        \"BaseSpeed\", 32)")
+    RunDKScriptCommand("Set_creature_configuration(\"DRUID\",         \"BaseSpeed\", 32)")
+    RunDKScriptCommand("Set_creature_configuration(\"FLY\",           \"BaseSpeed\", 128)")
+    RunDKScriptCommand("Set_creature_configuration(\"GHOST\",         \"BaseSpeed\", 64)")
+    RunDKScriptCommand("Set_creature_configuration(\"HELL_HOUND\",    \"BaseSpeed\", 96)")
+    RunDKScriptCommand("Set_creature_configuration(\"HORNY\",         \"BaseSpeed\", 96)")
+    RunDKScriptCommand("Set_creature_configuration(\"ORC\",           \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"SKELETON\",      \"BaseSpeed\", 64)")
+    RunDKScriptCommand("Set_creature_configuration(\"SORCEROR\",      \"BaseSpeed\", 32)")
+    RunDKScriptCommand("Set_creature_configuration(\"SPIDER\",        \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"TENTACLE\",      \"BaseSpeed\", 32)")
+    RunDKScriptCommand("Set_creature_configuration(\"TIME_MAGE\",     \"BaseSpeed\", 32)")
+    RunDKScriptCommand("Set_creature_configuration(\"TROLL\",         \"BaseSpeed\", 48)")
+    RunDKScriptCommand("Set_creature_configuration(\"VAMPIRE\",       \"BaseSpeed\", 56)")
+    MagicAvailable(PLAYER0, "POWER_HAND", false, false)
 
     RegisterOnConditionEvent("end_battle",function ()
                                 return PLAYER0.TOTAL_CREATURES == 0 or PLAYER1.TOTAL_CREATURES == 0
@@ -271,55 +271,55 @@ function start_prep_phase()
     Game.BattleUnitCounter = 0
     placeEnemyCreature()
     select_units_in_columns()
-    Change_slab_type(40, 40, "LIBRARY_WALL", "MATCH")
+    ChangeSlabType(40, 40, "LIBRARY_WALL", "MATCH")
 
-    Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)")
-    Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)")
-    Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)")
-    Run_DKScript_command("SET_PLAYER_MODIFIER(PLAYER1, Strength, 100)")
-    Magic_available(PLAYER0, "POWER_CALL_TO_ARMS", false, false)
-    Magic_available(PLAYER1, "POWER_CALL_TO_ARMS", false, false)
-    Run_DKScript_command("Set_creature_configuration(TUNNELLER, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(BILE_DEMON, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(BUG, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(DARK_MISTRESS, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(DEMONSPAWN, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(DRAGON, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(DRUID, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(FLY, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(GHOST, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(HELL_HOUND, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(HORNY, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(ORC, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(SKELETON, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(SORCEROR, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(SPIDER, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(TENTACLE, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(TIME_MAGE, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(TROLL, BaseSpeed, 0)")
-    Run_DKScript_command("Set_creature_configuration(VAMPIRE, BaseSpeed, 0)")
-    Magic_available(PLAYER0, "POWER_HAND", true, true)
-    Run_DKScript_command("Set_game_rule(BodyRemainsFor, 1)")
+    RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER0, SpellDamage, 100)")
+    RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER0, Strength, 100)")
+    RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER1, SpellDamage, 100)")
+    RunDKScriptCommand("SET_PLAYER_MODIFIER(PLAYER1, Strength, 100)")
+    MagicAvailable(PLAYER0, "POWER_CALL_TO_ARMS", false, false)
+    MagicAvailable(PLAYER1, "POWER_CALL_TO_ARMS", false, false)
+    RunDKScriptCommand("Set_creature_configuration(TUNNELLER, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(BILE_DEMON, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(BUG, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(DARK_MISTRESS, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(DEMONSPAWN, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(DRAGON, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(DRUID, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(FLY, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(GHOST, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(HELL_HOUND, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(HORNY, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(ORC, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(SKELETON, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(SORCEROR, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(SPIDER, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(TENTACLE, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(TIME_MAGE, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(TROLL, BaseSpeed, 0)")
+    RunDKScriptCommand("Set_creature_configuration(VAMPIRE, BaseSpeed, 0)")
+    MagicAvailable(PLAYER0, "POWER_HAND", true, true)
+    RunDKScriptCommand("Set_game_rule(BodyRemainsFor, 1)")
     
 
 end
 
 local function reset_round()
-    Use_power(PLAYER_GOOD, "POWER_HOLD_AUDIENCE", true)
+    UsePower(PLAYER_GOOD, "POWER_HOLD_AUDIENCE", true)
     --getCreatureByCriterion(PLAYER0, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_RED")
     --getCreatureByCriterion(PLAYER1, "ANY_CREATURE", "AT_ACTION_POINT[63]").TeleportCreature(20,"EFFECT_BALL_PUFF_BLUE")
 end
 
 local function spawn_imp()
     --SET_FLAG(PLAYER0, FLAG4, 3)
-    Add_creature_to_level(PLAYER0, "TUNNELLER", 49, 1, 1, 0)
+    AddCreatureToLevel(PLAYER0, "TUNNELLER", 49, 1, 1, "DEFAULT")
 end
 
 local function start_level()
 
     Game.Round = 1
 
-    Reveal_map_rect(PLAYER0, 133, 121, 70, 70)
+    RevealMapRect(PLAYER0, 133, 121, 70, 70)
     start_prep_phase()
 end
 
@@ -337,14 +337,14 @@ function unit_placed_in_battlefield()
 end
 
 local function clear_special_boxes_and_non_selected_units()
-    local objects = Get_things_of_class("Object")
+    local objects = GetThingsOfClass("Object")
     for index, ob in ipairs(objects) do
         if ob.model == "SPECBOX_CUSTOM" then
             ob:delete()
         end
     end
 
-    local creatures = Get_things_of_class("Creature")
+    local creatures = GetCreatures()
     
     for index, cr in ipairs(creatures) do
         if cr.owner == PLAYER_GOOD then
@@ -361,7 +361,7 @@ local function unit_select_special(cr)
         table.insert(Game.BattlefieldCreatures,Game.columns[cr.column].creature)
         clear_special_boxes_and_non_selected_units()
         RegisterOnConditionEvent("unit_placed_in_battlefield",function ()
-                                                            return Count_creatures_at_action_point(63,PLAYER0,"ANY_CREATURE") == Game.BattleUnitCounter + 1
+                                                            return CountCreaturesAtActionPoint(63,PLAYER0,"ANY_CREATURE") == Game.BattleUnitCounter + 1
                                                         end)
     end
 end
@@ -390,7 +390,7 @@ function placeEnemyCreature()
         local ap = math.random(10, 32)
         local cr = Creatures[ math.random( #Creatures ) ]
         local level = math.random(cr.levelRange[1], cr.levelRange[2])
-        table.insert(Game.BattlefieldCreatures,Add_creature_to_level(PLAYER1, cr.Creature_type, ap, 1, level, 0))
+        table.insert(Game.BattlefieldCreatures,AddCreatureToLevel(PLAYER1, cr.Creature_type, ap, 1, level, "DEFAULT"))
     end
 end
 
@@ -399,7 +399,7 @@ function drawPrices()
         if col.creature == nil then
             return
         end
-        Create_effect("EFFECTELEMENT_PRICE", col.displayCostAp, col.type.cost)
+        CreateEffect("EFFECTELEMENT_PRICE", col.displayCostAp, col.type.cost)
     end
 end
 

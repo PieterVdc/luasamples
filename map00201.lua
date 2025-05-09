@@ -11,80 +11,76 @@
 -- It happens when the level has finished loading and the map is about to start.
 function OnGameStart()
 	-- For example, showing the initial objective text to the player as soon as they enter their Dungeon Heart.
-	Quick_objective("Lord von Lua rules over this meagre realm. Head NORTH and make short work of him.", PLAYER_GOOD)
+	QuickObjective("Lord von Lua rules over this meagre realm. Head NORTH and make short work of him.", PLAYER_GOOD)
 	
 	-- My_setup() is our own function we made ourselves. You'll find it right below this one.
 	-- Since it's run by the OnGameStart() function, everything we define in My_setup() will also happen when the game starts.
-    My_setup()
+    my_setup()
 end
 
 
-function My_setup()
+function my_setup()
 	-- The following should all be very familiar if you've seen Dungeon Keeper level scripts before.
 	-- We set how long it takes for creatures to come out of Entrance portals.
     -- 350 game ticks is 17.5 seconds. Each real time second has 20 game ticks.
-    Set_generate_speed(350)
+    SetGenerateSpeed(350)
 	
 	-- ...set the maximum amount of creatures Player0 can have.
     -- Player0 is Red. Player1 Blue, Player2 Green, Player3 Yellow.
     -- There's also PLAYER_GOOD (White, for Heroes) and PLAYER_NEUTRAL (rainbow).
     -- KeeperFX additionally adds Player4 (Purple), Player5 (Black), Player6 (Orange).
-    Max_creatures(PLAYER0, 16)
+    MaxCreatures(PLAYER0, 16)
 
     -- Set the amount of gold at the start of the level.
-    Start_money(PLAYER0, 16000)
+    StartMoney(PLAYER0, 16000)
 
     -- Add creatures to the total creature pool that can be attracted by all Keepers.
-    Add_creature_to_pool("FLY", 1)
-    Add_creature_to_pool("SORCEROR", 4)
-    Add_creature_to_pool("BUG", 2)
-    Add_creature_to_pool("DEMONSPAWN", 4)
-    Add_creature_to_pool("BILE_DEMON", 1)
-    Add_creature_to_pool("TROLL", 4)
+    AddCreatureToPool("FLY", 1)
+    AddCreatureToPool("SORCEROR", 4)
+    AddCreatureToPool("BUG", 2)
+    AddCreatureToPool("DEMONSPAWN", 4)
+    AddCreatureToPool("BILE_DEMON", 1)
+    AddCreatureToPool("TROLL", 4)
 
     -- Then, make those creatures actually available on a per player basis.
-    Creature_available("ALL_PLAYERS", "FLY", true, 0)
-    Creature_available("ALL_PLAYERS", "BUG", true, 0)
-    Creature_available("ALL_PLAYERS", "SORCEROR", true, 0)
-    Creature_available("ALL_PLAYERS", "DEMONSPAWN", true, 0)
-    Creature_available("ALL_PLAYERS", "BILE_DEMON", true, 0)
-    Creature_available("ALL_PLAYERS", "TROLL", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "FLY", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "BUG", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "SORCEROR", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "DEMONSPAWN", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "BILE_DEMON", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "TROLL", true, 0)
 
     -- We have all these rooms available from the start.
-    Room_available("ALL_PLAYERS", "TREASURE", 2, true)
-    Room_available("ALL_PLAYERS", "LAIR", 2, true)
-    Room_available("ALL_PLAYERS", "GARDEN", 2, true)
-    Room_available("ALL_PLAYERS", "TRAINING", 2, true)
-    Room_available("ALL_PLAYERS", "RESEARCH", 2, true)
-    Room_available("ALL_PLAYERS", "WORKSHOP", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TREASURE", 2, true)
+    RoomAvailable("ALL_PLAYERS", "LAIR", 2, true)
+    RoomAvailable("ALL_PLAYERS", "GARDEN", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TRAINING", 2, true)
+    RoomAvailable("ALL_PLAYERS", "RESEARCH", 2, true)
+    RoomAvailable("ALL_PLAYERS", "WORKSHOP", 2, true)
 
     -- The Bridge is set to false and won't be available right away.
     -- With can_be_available set to 2, it will be available when researched or claimed.
-    Room_available("ALL_PLAYERS", "BRIDGE", 2, false)
+    RoomAvailable("ALL_PLAYERS", "BRIDGE", 2, false)
 
     -- The Guard Post can't be researched, but will become available when claimed on the map.
-    Room_available("ALL_PLAYERS", "GUARD_POST", 3, false)
+    RoomAvailable("ALL_PLAYERS", "GUARD_POST", 3, false)
 
-    -- Here's all the Keeper spells. Imp, Sight, and Call to Arms are available from the start.
-    -- Speed and Heal can be researched.
-    Magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SIGHT", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
-    Magic_available("ALL_PLAYERS", "POWER_SPEED", true, false)
-    Magic_available("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, false)
+    -- Here's all the Keeper spells. Imp, Sight, and Call to Arms are availa
+
+    MagicAvailable("ALL_PLAYERS", "POWER_HEAL_CREATURE", true, false)
 
     -- Make some traps available since we enabled the Workshop earlier.
-    Trap_available("ALL_PLAYERS", "POISON_GAS", true, 0)
-    Trap_available("ALL_PLAYERS", "LIGHTNING", true, 0)
+    TrapAvailable("ALL_PLAYERS", "POISON_GAS", true, 0)
+    TrapAvailable("ALL_PLAYERS", "LIGHTNING", true, 0)
 
     -- And the Wooden Door.
-    Door_available("ALL_PLAYERS", "WOOD", true, 0)
+    DoorAvailable("ALL_PLAYERS", "WOOD", true, 0)
 
 	-- Run_DKScript_command can be useful in case a Lua equivalent is not (yet) available.
 	-- We'll spawn a lone Knight as the final fight of the level.
     -- Let's give Knights more health to make the Lord of the Land more fearsome.
     -- A Knight's normal HP is 950 at level 1. Raising it to 1500 sounds good.
-    Run_DKScript_command("SET_CREATURE_CONFIGURATION(KNIGHT, Health, 1500)")
+    RunDKScriptCommand("SET_CREATURE_CONFIGURATION(KNIGHT, Health, 1500)")
 
 	-- We'll spawn some hero waves. Let's make a custom variable that will keep track of how many we have sent.
     -- By making it part of Game, it will be saved when the player saves the game.
@@ -102,15 +98,15 @@ end
 -- Here, we define some hero parties to spawn later.
 function My_hero_parties()
     -- The "Scouts" party will have 2 Thieves of level 1 with 500 gold, and 1 Archer of level 1 with 250 gold.
-    Create_party("Scouts")
-    Add_to_party("Scouts", "THIEF", 1, 500, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("Scouts", "THIEF", 1, 500, "ATTACK_DUNGEON_HEART", 0)
-	Add_to_party("Scouts", "ARCHER", 1, 250, "ATTACK_DUNGEON_HEART", 0)
+    CreateParty("Scouts")
+    AddToParty("Scouts", "THIEF", 1, 500, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("Scouts", "THIEF", 1, 500, "ATTACK_DUNGEON_HEART", 0)
+	AddToParty("Scouts", "ARCHER", 1, 250, "ATTACK_DUNGEON_HEART", 0)
 
     -- The "Landlord" party will have just the 1 Knight of level 3 with 0 gold.
     -- This party will wait an extra 1000 game ticks (50 seconds) before attacking.
-    Create_party("Landlord")
-    Add_to_party("Landlord", "KNIGHT", 3, 0, "ATTACK_DUNGEON_HEART", 1000)
+    CreateParty("Landlord")
+    AddToParty("Landlord", "KNIGHT", 3, 0, "ATTACK_DUNGEON_HEART", 1000)
 end
 
 
@@ -143,7 +139,7 @@ function My_create_triggers()
     -- Above, we put our condition inside a "function() ... end" block to quickly define a short function.
     -- That's the same way our big function blocks are set up, just in one line rather than a separate text block.
     -- We do that with both our condition and action here as both are simple.
-    RegisterOnConditionEvent(function() Win_game(PLAYER0) end, function() return (PLAYER_GOOD.DUNGEON_DESTROYED >= 1) end)
+    RegisterOnConditionEvent(function() WinGame(PLAYER0) end, function() return (PLAYER_GOOD.DUNGEON_DESTROYED >= 1) end)
 end
 
 
@@ -152,11 +148,11 @@ function Spawn_tunneller()
     -- at -1, that is Hero Gate 1,
     -- going for the dungeon of player 0 (red),
     -- led by a level 1 tunneller that carries 250 gold.
-    Add_tunneller_party_to_level(PLAYER_GOOD,"Scouts",-1,"DUNGEON",0,1,250)
+    AddTunnellerPartyToLevel(PLAYER_GOOD,"Scouts",-1,"DUNGEON",0,1,250)
 
     -- Let's warn the player.
     -- Use message slot 1 to send the player a glowing green i message that says the following:
-    Quick_information(1,"There are Heroes nearby, Keeper...")
+    QuickInformation(1,"There are Heroes nearby, Keeper...")
 end
 
 
@@ -182,11 +178,11 @@ end
 -- Found_hero_heart is the action of the first trigger we set up in My_create_triggers().
 -- Check again above to see what makes it happen.
 function Found_hero_heart()
-    Quick_objective("Lord von Lua has arrived! Defeat him and destroy the Dungeon Heart!", PLAYER_GOOD)
+    QuickObjective("Lord von Lua has arrived! Defeat him and destroy the Dungeon Heart!", PLAYER_GOOD)
 
     -- We add the "Landlord" hero party to the level.
     -- By assigning it to a variable, we can keep track of the party and the creatures in it, and do things to them.
-    local knightParty = Add_party_to_level(PLAYER_GOOD, "Landlord", -3)
+    local knightParty = AddPartyToLevel(PLAYER_GOOD, "Landlord", -3)
 
     -- The first (and only) member of our "Landlord" party is our Knight.
     -- By saving him to a variable, we can do additional things to him, and keep track of his status.
@@ -194,10 +190,11 @@ function Found_hero_heart()
     -- knightParty can be local since we only needed it to grab our Knight creature. We don't need to do anything else to the party later.
     -- If there was more than 1 creature in the party, they'd be saved as knightParty[2], knightParty[3], etc.
     Game.finalKnight = knightParty[1]
+    Game.finalKnight.name = "Lord von Lua"
 
     -- We can cast spells on him. Spell names can be found in your KeeperFX folder /fxdata/magic.cfg.
-    Use_spell_on_creature(Game.finalKnight,"SPELL_FLIGHT",0)
-    Use_spell_on_creature(Game.finalKnight,"SPELL_ARMOUR",0)
+    UseSpellOnCreature(Game.finalKnight,"SPELL_FLIGHT",0)
+    UseSpellOnCreature(Game.finalKnight,"SPELL_ARMOUR",0)
 
     -- And create a new trigger.
     -- Its event will happen when he specifically dies and run our custom function Killed_final_knight.
@@ -209,12 +206,12 @@ end
 -- Turns out he was a Vampire in disguise all along!
 function Killed_final_knight()
     -- We can make the zoom eye button of the objective message go to exactly where he died.
-    Quick_objective_with_pos("Lord von Lua was a Vampire all along! Make him pay for his treachery!", Game.finalKnight.pos.stl_x, Game.finalKnight.pos.stl_y)
+    QuickObjectiveWithPos("Lord von Lua was a Vampire all along! Make him pay for his treachery!", Game.finalKnight.pos.stl_x, Game.finalKnight.pos.stl_y)
 
     -- We can quickly set up a new party and add it to the level where the Knight died.
-    Create_party("Final")
-    Add_to_party("Final", "VAMPIRE", 3, 5000, "ATTACK_DUNGEON_HEART", 1000)
-    local finalParty = Add_party_to_level(PLAYER_GOOD, "Final", Game.finalKnight.pos)
+    CreateParty("Final")
+    AddToParty("Final", "VAMPIRE", 3, 5000, "ATTACK_DUNGEON_HEART", 1000)
+    local finalParty = AddPartyToLevel(PLAYER_GOOD, "Final", Game.finalKnight.pos)
 
     -- Save the new Vampire to a variable and add a new trigger to fire when the Vampire dies.
     Game.finalVampire = finalParty[1]
@@ -228,16 +225,16 @@ function Killed_final_knight()
     -- But right now, the Knight would still play his full death animation. We just spawn a Vampire on top.
     -- We can remove the Knight entirely to stop the animation and leave no corpse.
     -- Luckily, we still have him saved as a variable!
-    Game.finalKnight:delete_thing()
+    Game.finalKnight:delete()
 end
 
 
 function Killed_final_vampire()
-    Quick_objective("Lord von Lua lies before you, bloodied and beaten. Enjoy your victory, Keeper.", PLAYER_GOOD)
+    QuickObjective("Lord von Lua lies before you, bloodied and beaten. Enjoy your victory, Keeper.", PLAYER_GOOD)
 
     -- Destroy the White Dungeon Heart to save some time.
     -- Internally called SOUL_CONTAINER, hearts have 30000 HP by default.
-    Add_heart_health("PLAYER_GOOD", -30000, false)
+    AddHeartHealth("PLAYER_GOOD", -30000, false)
 end
 
 
@@ -259,7 +256,7 @@ function Spawn_hero_wave()
     -- We defined a custom variable Game.waveNumber all the way back in My_setup().
     -- If our custom variable Game.waveNumber is 1, we will create PARTY1. If it is 7, we will create PARTY7.
     local partyName = "PARTY" .. Game.waveNumber
-	Create_party(partyName)
+	CreateParty(partyName)
 	
 	-- Using a for loop, we can repeat script commands.
 	-- Our temporary variable i will go from 1 up to partySize. If partySize is 8, i will be 1, 2, 3, 4, 5, 6, 7, 8.
@@ -275,7 +272,7 @@ function Spawn_hero_wave()
 		
 		-- Finally, we add a creature of type partyPick to our party named partyName.
 		-- It will be level 1, hold 200 gold, and go "ATTACK_ENEMIES" after a delay of 0 ticks.
-		Add_to_party(partyName,partyPick,1,200,"ATTACK_ENEMIES",0)
+		AddToParty(partyName,partyPick,1,200,"ATTACK_ENEMIES",0)
 	end
 	
 	-- Now that the party is generated, let's put it on the map!
@@ -287,7 +284,7 @@ function Spawn_hero_wave()
 	-- We spawn a tunneller party for the Hero player at Hero gate randomGate that goes to player 0's dungeon.
 	-- The tunneller's level will be equal to Game.waveNumber so we can see how many waves we've sent.
     -- Note the -randomGate (since positive IDs are Action Points, and negative IDs are Hero Gates).
-	Add_tunneller_party_to_level(PLAYER_GOOD,partyName,randomGate,"DUNGEON",0,Game.waveNumber,500)
+	AddTunnellerPartyToLevel(PLAYER_GOOD,partyName,randomGate,"DUNGEON",0,Game.waveNumber,500)
 
     -- Let's warn the player about this.
     -- We can assign text to a variable and have the displayed message be different.
@@ -300,7 +297,7 @@ function Spawn_hero_wave()
     end
     
     -- By using .. we can add these pieces of text together.
-    Quick_information(2,"Another band of naive heroes is attacking from " .. gateLocationText .. "!", randomGate)
+    QuickInformation(2,"Another band of naive heroes is attacking from " .. gateLocationText .. "!", randomGate)
     -- The information message's eye button will zoom to randomGate - the number we selected earlier.
     -- That will be the same number Add_tunneller_party_to_level used above.
 
