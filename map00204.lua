@@ -128,9 +128,9 @@ function Drop_random_loot(eventData, triggerData)
         if math.random(1,100) <= 40 then
             -- 20% chance for it to be a Lightning Trap, otherwise it's an Alarm Trap.
             if math.random(1,100) <= 20 then
-                Add_object_to_level("WRKBOX_LIGHTNG", pos, 0)
+                AddObjectToLevel("WRKBOX_LIGHTNG", pos, 0)
             else
-                Add_object_to_level("WRKBOX_ALARM", pos, 0)
+                AddObjectToLevel("WRKBOX_ALARM", pos, 0)
             end
         end
     end

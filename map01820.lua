@@ -136,7 +136,7 @@ function select_units_in_columns()
         for _, cr in ipairs(Creatures) do
             if cr.column == index and cr.Row == rownNo then
                 col.type = cr
-                Add_object_to_level("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
+                AddObjectToLevel("SPECBOX_CUSTOM", col.boxAp, cr.SpecialBoxId, PLAYER0)
                 
                 local level = math.random(cr.levelRange[1], cr.levelRange[2])
                 print(cr.Creature_type)
@@ -371,10 +371,10 @@ function special_activated (eventData,triggerData)
     if eventData.SpecialBoxId == 18 then --START GAME
         start_level()
     elseif eventData.SpecialBoxId == 19 then --"RESET ROUND, no money refund!"
-        Add_object_to_level_at_pos("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
+        AddObjectToLevelAtPos("SPECBOX_CUSTOM", 115, 139, 19, PLAYER0)
         reset_round()
     elseif eventData.SpecialBoxId == 20 then --"FREE IMP"
-        Add_object_to_level_at_pos("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
+        AddObjectToLevelAtPos("SPECBOX_CUSTOM", 115, 145, 20, PLAYER0)
         spawn_imp()
     else
         for _, cr in ipairs(Creatures) do

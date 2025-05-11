@@ -86,7 +86,7 @@ function placeSpecialBoxes(creature)
 
     for _, move in pairs(moves) do
         if move[1] == sfId then
-            Add_object_to_level("SPECBOX_CUSTOM",sfId_to_pos(move[2]),0)
+            AddObjectToLevel("SPECBOX_CUSTOM",sfId_to_pos(move[2]),0)
             num_moves = num_moves +1
         end
     end
