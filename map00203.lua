@@ -23,25 +23,25 @@ function My_setup()
 
     StartMoney(PLAYER0, 10000)
 
-    Game.add_creature_to_pool("FLY", 1)
-    Game.add_creature_to_pool("DEMONSPAWN", 8)
-    Game.add_creature_to_pool("HELL_HOUND", 8)
+    AddCreatureToPool("FLY", 1)
+    AddCreatureToPool("DEMONSPAWN", 8)
+    AddCreatureToPool("HELL_HOUND", 8)
 
-    Game.creature_available("ALL_PLAYERS", "FLY", true, 1)
-    Game.creature_available("ALL_PLAYERS", "DEMONSPAWN", true, 0)
-    Game.creature_available("ALL_PLAYERS", "HELL_HOUND", true, 1)
+    CreatureAvailable("ALL_PLAYERS", "FLY", true, 1)
+    CreatureAvailable("ALL_PLAYERS", "DEMONSPAWN", true, 0)
+    CreatureAvailable("ALL_PLAYERS", "HELL_HOUND", true, 1)
 
-    Game.room_available("ALL_PLAYERS", "TREASURE", 2, true)
-    Game.room_available("ALL_PLAYERS", "LAIR", 2, true)
-    Game.room_available("ALL_PLAYERS", "GARDEN", 2, true)
-    Game.room_available("ALL_PLAYERS", "TRAINING", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TREASURE", 2, true)
+    RoomAvailable("ALL_PLAYERS", "LAIR", 2, true)
+    RoomAvailable("ALL_PLAYERS", "GARDEN", 2, true)
+    RoomAvailable("ALL_PLAYERS", "TRAINING", 2, true)
 
-    Game.room_available("ALL_PLAYERS", "BRIDGE", 2, false)
+    RoomAvailable("ALL_PLAYERS", "BRIDGE", 2, false)
 
-    Game.magic_available("ALL_PLAYERS", "POWER_IMP", true, true)
-    Game.magic_available("ALL_PLAYERS", "POWER_SIGHT", true, true)
-    Game.magic_available("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
-    Game.magic_available("ALL_PLAYERS", "POWER_SPEED", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_IMP", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_SIGHT", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_CALL_TO_ARMS", true, true)
+    MagicAvailable("ALL_PLAYERS", "POWER_SPEED", true, true)
 
     -- This sets the Hell Hound attraction requirement (Scavenger Room) to NULL i.e. none.
     -- They will always come through the Entrance to our dungeon.
